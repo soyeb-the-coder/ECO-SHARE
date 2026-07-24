@@ -17,29 +17,31 @@
       theme: {
         extend: {
           colors: {
+            // Indian Folk / Desi palette (maps over old earth/leaf/saffron names)
             earth: {
-              50: '#FFF8E1',
-              100: '#FFECB3',
-              200: '#FFE082',
-              300: '#FFD54F',
-              400: '#FFCA28',
-              500: '#FF8F00',
-              600: '#E65100',
-              700: '#BF360C',
-              800: '#3E2723',
-              900: '#2E1B0E',
-              950: '#1A0F07',
+              50: '#FDF0D5',  // cream paper
+              100: '#F5E6C8', // slightly darker cream
+              200: '#E8D5A8', // warm tan
+              300: '#D4B87A', // border tan
+              400: '#C49A5C', // medium tan
+              500: '#B8860B', // golden
+              600: '#8B6914', // dark gold
+              700: '#6B4F12', // darker
+              800: '#4A3510', // text dark
+              900: '#3E1F0A', // text darkest
+              950: '#2A1508', // almost black
             },
             leaf: {
-              400: '#66BB6A',
-              500: '#2E7D32',
+              400: '#40916C',
+              500: '#2D6A4F',
               600: '#1B5E20',
               700: '#0D3B0F',
             },
             saffron: {
-              400: '#FFB74D',
-              500: '#FF8F00',
-              600: '#E65100',
+              200: '#FFD699',
+              400: '#FF8C42',
+              500: '#FF6B35',
+              600: '#E55A2B',
             }
           }
         }
@@ -52,27 +54,127 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Caveat:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
 
     * { font-family: 'Inter', sans-serif; }
-    h1, h2, .font-display { font-family: 'Playfair Display', serif; }
+    h1, h2, .font-display { font-family: 'Noto Sans Devanagari', 'Playfair Display', serif; }
+    .font-hand { font-family: 'Caveat', cursive; }
 
     body {
-      background: #1A0F07;
+      background: #FDF0D5;
       background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(46, 125, 50, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(255, 143, 0, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(62, 39, 35, 0.3) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(45, 106, 79, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(193, 18, 31, 0.03) 0%, transparent 50%);
     }
 
-    /* Rangoli pattern overlay */
-    .rangoli-bg {
+    /* Paper texture overlay */
+    .paper-bg {
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='2' fill='%23FF8F00'/%3E%3Ccircle cx='40' cy='40' r='8' fill='none' stroke='%23FF8F00' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='16' fill='none' stroke='%23FF8F00' stroke-width='0.3'/%3E%3Ccircle cx='40' cy='40' r='24' fill='none' stroke='%23FF8F00' stroke-width='0.2'/%3E%3Ccircle cx='0' cy='0' r='2' fill='%232E7D32'/%3E%3Ccircle cx='0' cy='0' r='8' fill='none' stroke='%232E7D32' stroke-width='0.5'/%3E%3Ccircle cx='80' cy='0' r='2' fill='%232E7D32'/%3E%3Ccircle cx='80' cy='0' r='8' fill='none' stroke='%232E7D32' stroke-width='0.5'/%3E%3Ccircle cx='0' cy='80' r='2' fill='%232E7D32'/%3E%3Ccircle cx='0' cy='80' r='8' fill='none' stroke='%232E7D32' stroke-width='0.5'/%3E%3Ccircle cx='80' cy='80' r='2' fill='%232E7D32'/%3E%3Ccircle cx='80' cy='80' r='8' fill='none' stroke='%232E7D32' stroke-width='0.5'/%3E%3C/svg%3E");
+      opacity: 0.06;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 2px),
+        radial-gradient(ellipse at 30% 50%, rgba(139, 105, 20, 0.05) 0%, transparent 50%);
+    }
+
+    /* Indian folk border pattern */
+    .folk-border {
+      border: 2px solid #3E1F0A;
+      outline: 1px solid #FFC300;
+      outline-offset: 3px;
+      box-shadow: 4px 4px 0 #3E1F0A;
+    }
+    .folk-border-light {
+      border: 2px solid #D4B87A;
+      outline: 1px solid #FFC300;
+      outline-offset: 2px;
+    }
+
+    /* Stamp effect */
+    .stamp {
+      display: inline-block;
+      padding: 4px 12px;
+      background: transparent;
+      color: #C1121F;
+      border: 2px solid #C1121F;
+      border-radius: 0;
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 12px;
+      transform: rotate(-2deg);
+      text-transform: uppercase;
+      box-shadow: 0 0 0 2px transparent;
+      opacity: 0.85;
+    }
+
+    /* Hand-drawn button style */
+    .btn-folk {
+      background: #FF6B35;
+      color: #FDF0D5;
+      border: 2px solid #3E1F0A;
+      box-shadow: 3px 3px 0 #3E1F0A;
+      transition: all 0.15s ease;
+      font-weight: 700;
+    }
+    .btn-folk:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 5px 5px 0 #3E1F0A;
+    }
+    .btn-folk:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 #3E1F0A;
+    }
+    .btn-folk-green {
+      background: #2D6A4F;
+      color: #FDF0D5;
+      border: 2px solid #3E1F0A;
+      box-shadow: 3px 3px 0 #3E1F0A;
+      transition: all 0.15s ease;
+    }
+    .btn-folk-green:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 5px 5px 0 #3E1F0A;
+    }
+    .btn-folk-green:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 #3E1F0A;
+    }
+
+    /* Card style */
+    .card-folk {
+      background: #FDF0D5;
+      border: 2px solid #D4B87A;
+      box-shadow: 4px 4px 0 #D4B87A;
+    }
+    .card-folk-accent {
+      background: #FDF0D5;
+      border: 2px solid #FF6B35;
+      border-left: 6px solid #FF6B35;
+      box-shadow: 4px 4px 0 rgba(255, 107, 53, 0.2);
+    }
+
+    /* Signboard header style */
+    .signboard {
+      background: #3E1F0A;
+      color: #FFC300;
+      border: 3px solid #FF6B35;
+      box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+      padding: 8px 20px;
+      display: inline-block;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Hand-drawn line separator */
+    .folk-divider {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #FF6B35, #FFC300, #2D6A4F, transparent);
+      border: none;
+      opacity: 0.4;
     }
 
     @keyframes pulseGlow {
@@ -86,7 +188,7 @@
       100% { background-position: 200% 50%; }
     }
     .flow-pipe {
-      background: linear-gradient(90deg, transparent, #FF8F00, #2E7D32, transparent);
+      background: linear-gradient(90deg, transparent, #FF6B35, #2D6A4F, transparent);
       background-size: 200% 100%;
       animation: flowPipe 2s linear infinite;
     }
@@ -97,18 +199,13 @@
     }
     .float-anim { animation: floatUp 3s ease-in-out infinite; }
 
-    .tab-active {
-      background: #2E7D32 !important;
-      color: #FFF8E1 !important;
-    }
-
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #1A0F07; }
-    ::-webkit-scrollbar-thumb { background: #3E2723; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #FF8F00; }
+    ::-webkit-scrollbar-track { background: #FDF0D5; }
+    ::-webkit-scrollbar-thumb { background: #D4B87A; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
   </style>
 </head>
-<body class="text-earth-50 min-h-screen overflow-x-hidden selection:bg-saffron-500 selection:text-earth-950">
+<body class="text-earth-900 min-h-screen overflow-x-hidden selection:bg-desi-saffron selection:text-white">
 
   <!-- Rangoli Pattern Background -->
   <div class="rangoli-bg"></div>
@@ -119,7 +216,7 @@
   <video id="bg-video" autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover pointer-events-none" style="z-index: -10; opacity: 0;">
     <source src="https://cdn.pixabay.com/video/2020/08/08/46647-449284699_large.mp4" type="video/mp4">
   </video>
-  <div class="fixed inset-0 bg-earth-950/60 pointer-events-none" style="z-index: -5;"></div>
+  <div class="fixed inset-0 bg-white/60 pointer-events-none" style="z-index: -5;"></div>
   <style>
     #bg-video { opacity: 0; transition: opacity 1.5s ease-in; }
     #bg-video.loaded { opacity: 0.35; }
@@ -146,36 +243,36 @@
     <!-- Top Navigation -->
     <header class="flex justify-between items-center py-4">
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-leaf-500 animate-ping"></span>
-        <span class="text-xs font-mono tracking-widest text-leaf-400 uppercase font-bold">EcoShare Narrative</span>
+        <span class="w-3 h-3 rounded-full bg-green-700 animate-ping"></span>
+        <span class="text-xs font-mono tracking-widest text-green-600 uppercase font-bold">EcoShare Narrative</span>
       </div>
-      <button onclick="skipToPlatform()" class="text-xs font-semibold text-earth-50/60 hover:text-earth-50 border border-earth-800 hover:border-saffron-500/50 bg-earth-900/80 px-4 py-2 rounded-full transition-all backdrop-blur-md">
+      <button onclick="skipToPlatform()" class="text-xs font-semibold text-earth-700 hover:text-earth-900 border border-earth-300 hover:border-orange-500/50 bg-earth-100/90 px-4 py-2 rounded-full transition-all backdrop-blur-md">
         Skip to Platform <i class="fa-solid fa-arrow-right ml-1"></i>
       </button>
     </header>
 
     <!-- ACT 1: THE PARADOX -->
     <section id="act-1" class="story-act my-auto py-12">
-      <p class="text-saffron-500 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act I — The Reality We Ignore</p>
-      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-50 mb-6 leading-tight">
+      <p class="text-orange-600 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act I — The Reality We Ignore</p>
+      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-900 mb-6 leading-tight">
         In one kitchen, food is thrown into dustbins. <br>
         <span class="text-red-400">Outside, a child hasn't eaten since yesterday.</span>
       </h1>
-      <p class="text-earth-50/60 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
-        India wastes <strong class="text-earth-50">67 million tonnes</strong> of food every year — enough to feed every malnourished person in the country <strong class="text-saffron-400">three times over</strong>. While canteens dump full plates, daily wage labourers, homeless families, and orphan children search through garbage for their next meal. This isn't a distant problem — it's happening <em>right outside your campus gate</em>.
+      <p class="text-earth-700 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+        India wastes <strong class="text-earth-900">67 million tonnes</strong> of food every year — enough to feed every malnourished person in the country <strong class="text-orange-500">three times over</strong>. While canteens dump full plates, daily wage labourers, homeless families, and orphan children search through garbage for their next meal. This isn't a distant problem — it's happening <em>right outside your campus gate</em>.
       </p>
       <div class="grid grid-cols-2 gap-4 max-w-md mb-8">
         <div class="bg-red-900/20 border border-red-800/30 rounded-2xl p-4 text-center">
           <p class="text-3xl font-black text-red-400">194M</p>
-          <p class="text-[11px] text-earth-50/50 mt-1">Indians are undernourished</p>
+          <p class="text-[11px] text-earth-600 mt-1">Indians are undernourished</p>
         </div>
         <div class="bg-red-900/20 border border-red-800/30 rounded-2xl p-4 text-center">
-          <p class="text-3xl font-black text-saffron-400">₹92,000 Cr</p>
-          <p class="text-[11px] text-earth-50/50 mt-1">Value of food wasted annually</p>
+          <p class="text-3xl font-black text-orange-500">₹92,000 Cr</p>
+          <p class="text-[11px] text-earth-600 mt-1">Value of food wasted annually</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <button onclick="nextAct(2)" class="bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-leaf-500/20 flex items-center gap-2">
+        <button onclick="nextAct(2)" class="bg-green-700 hover:bg-green-600 text-earth-900 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-green-600/20 flex items-center gap-2">
           What happens to this waste? <i class="fa-solid fa-chevron-right text-xs"></i>
         </button>
       </div>
@@ -184,33 +281,33 @@
     <!-- ACT 2: CLIMATE COST -->
     <section id="act-2" class="story-act hidden my-auto py-12">
       <p class="text-red-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act II — The Invisible Climate Cost</p>
-      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-50 mb-6 leading-tight">
+      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-900 mb-6 leading-tight">
         That rotting food in landfills doesn't just stink... <br>
-        <span class="text-saffron-400">it's heating our planet faster than cars.</span>
+        <span class="text-orange-500">it's heating our planet faster than cars.</span>
       </h1>
-      <p class="text-earth-50/60 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
-        When food decomposes without oxygen in landfills, it releases <strong class="text-earth-50">methane</strong> — a greenhouse gas <strong class="text-red-400">25× more potent than CO₂</strong>. India's food waste alone generates more methane than the entire aviation industry. And while this gas is destroying our atmosphere, we're burning fossil fuels for the same energy methane could have given us.
+      <p class="text-earth-700 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+        When food decomposes without oxygen in landfills, it releases <strong class="text-earth-900">methane</strong> — a greenhouse gas <strong class="text-red-400">25× more potent than CO₂</strong>. India's food waste alone generates more methane than the entire aviation industry. And while this gas is destroying our atmosphere, we're burning fossil fuels for the same energy methane could have given us.
       </p>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mb-8">
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
           <p class="text-2xl font-black text-red-400">2.5 kg</p>
-          <p class="text-xs text-earth-50/50 mt-1">CO<sub>2</sub> per wasted meal</p>
+          <p class="text-xs text-earth-600 mt-1">CO<sub>2</sub> per wasted meal</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-2xl font-black text-saffron-400">8-10%</p>
-          <p class="text-xs text-earth-50/50 mt-1">Global emissions from food waste</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-2xl font-black text-orange-500">8-10%</p>
+          <p class="text-xs text-earth-600 mt-1">Global emissions from food waste</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-2xl font-black text-leaf-400">25×</p>
-          <p class="text-xs text-earth-50/50 mt-1">Methane is more potent than CO₂</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-2xl font-black text-green-600">25×</p>
+          <p class="text-xs text-earth-600 mt-1">Methane is more potent than CO₂</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
           <p class="text-2xl font-black text-red-400">67M</p>
-          <p class="text-xs text-earth-50/50 mt-1">Tonnes India wastes annually</p>
+          <p class="text-xs text-earth-600 mt-1">Tonnes India wastes annually</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <button onclick="nextAct(3)" class="bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-leaf-500/20 flex items-center gap-2">
+        <button onclick="nextAct(3)" class="bg-green-700 hover:bg-green-600 text-earth-900 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-green-600/20 flex items-center gap-2">
           How EcoShare fixes this <i class="fa-solid fa-chevron-right text-xs"></i>
         </button>
       </div>
@@ -218,28 +315,28 @@
 
     <!-- ACT 3: THE SOLUTION (FOOD FOR HUMANS) -->
     <section id="act-3" class="story-act hidden my-auto py-12">
-      <p class="text-leaf-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act III — The Bridge</p>
-      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-50 mb-6 leading-tight">
+      <p class="text-green-600 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act III — The Bridge</p>
+      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-900 mb-6 leading-tight">
         What if surplus food reached hungry hands <br>
-        <span class="text-leaf-400">before it touched a dustbin?</span>
+        <span class="text-green-600">before it touched a dustbin?</span>
       </h1>
-      <p class="text-earth-50/60 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
-        EcoShare connects campus mess halls, event organizers, and canteens directly with local volunteers, slum communities, and orphanages. <strong class="text-leaf-400">Fresh food that would be dumped reaches someone who hasn't eaten today — in under 30 minutes.</strong>
+      <p class="text-earth-700 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+        EcoShare connects campus mess halls, event organizers, and canteens directly with local volunteers, slum communities, and orphanages. <strong class="text-green-600">Fresh food that would be dumped reaches someone who hasn't eaten today — in under 30 minutes.</strong>
       </p>
-      <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-6 max-w-md mb-8">
+      <div class="bg-earth-100/70 border border-earth-300 rounded-2xl p-6 max-w-md mb-8">
         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full bg-leaf-500/20 flex items-center justify-center">
-            <i class="fa-solid fa-hand-holding-heart text-leaf-400"></i>
+          <div class="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center">
+            <i class="fa-solid fa-hand-holding-heart text-green-600"></i>
           </div>
           <div>
-            <p class="text-sm font-bold text-earth-50">But the story doesn't end here...</p>
-            <p class="text-xs text-earth-50/50">Not all leftover food is safe for humans</p>
+            <p class="text-sm font-bold text-earth-900">But the story doesn't end here...</p>
+            <p class="text-xs text-earth-600">Not all leftover food is safe for humans</p>
           </div>
         </div>
-        <p class="text-xs text-earth-50/60 leading-relaxed">Burnt rice, stale bread, vegetable peels, overripe fruits — what canteens throw away as "waste" is actually food that <strong class="text-saffron-400">60 million stray animals</strong> are starving for. And the food even they can't eat? That still has power left in it.</p>
+        <p class="text-xs text-earth-700 leading-relaxed">Burnt rice, stale bread, vegetable peels, overripe fruits — what canteens throw away as "waste" is actually food that <strong class="text-orange-500">60 million stray animals</strong> are starving for. And the food even they can't eat? That still has power left in it.</p>
       </div>
       <div class="flex items-center gap-4">
-        <button onclick="nextAct(4)" class="bg-saffron-500 hover:bg-saffron-400 text-earth-950 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-saffron-500/20 flex items-center gap-2">
+        <button onclick="nextAct(4)" class="bg-orange-500 hover:bg-orange-400 text-earth-950 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-orange-500/20 flex items-center gap-2">
           <i class="fa-solid fa-paw"></i> The animals are starving too <i class="fa-solid fa-chevron-right text-xs"></i>
         </button>
       </div>
@@ -247,36 +344,36 @@
 
     <!-- ACT 4: ANIMAL RESCUE -->
     <section id="act-4" class="story-act hidden my-auto py-12">
-      <p class="text-saffron-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act IV — They're Starving Too</p>
-      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-50 mb-6 leading-tight">
+      <p class="text-orange-500 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act IV — They're Starving Too</p>
+      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-900 mb-6 leading-tight">
         A stray dog eats from a garbage truck... <br>
-        <span class="text-saffron-400">while a canteen throws away 50 kg of rice.</span>
+        <span class="text-orange-500">while a canteen throws away 50 kg of rice.</span>
       </h1>
-      <p class="text-earth-50/60 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
-        Walk outside any campus and you'll see them — rib-showing stray dogs, blind calves tied to poles, injured cats hiding under parked cars. India has <strong class="text-saffron-400">60 million stray animals</strong>, most surviving on nothing but dirty water and plastic. Meanwhile, canteens throw away vegetable peels, stale rotis, leftover rice, and overripe fruits — food that could keep these animals alive for another day.
+      <p class="text-earth-700 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+        Walk outside any campus and you'll see them — rib-showing stray dogs, blind calves tied to poles, injured cats hiding under parked cars. India has <strong class="text-orange-500">60 million stray animals</strong>, most surviving on nothing but dirty water and plastic. Meanwhile, canteens throw away vegetable peels, stale rotis, leftover rice, and overripe fruits — food that could keep these animals alive for another day.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mb-8">
-        <div class="bg-earth-900/80 border border-saffron-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 0s;">
+        <div class="bg-earth-100/90 border border-orange-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 0s;">
           <p class="text-3xl mb-2">🐕</p>
-          <p class="text-2xl font-black text-saffron-400">35M</p>
-          <p class="text-[11px] text-earth-50/50 mt-1">Stray dogs — most never fed by humans</p>
+          <p class="text-2xl font-black text-orange-500">35M</p>
+          <p class="text-[11px] text-earth-600 mt-1">Stray dogs — most never fed by humans</p>
         </div>
-        <div class="bg-earth-900/80 border border-saffron-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 0.5s;">
+        <div class="bg-earth-100/90 border border-orange-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 0.5s;">
           <p class="text-3xl mb-2">🐄</p>
           <p class="text-2xl font-black text-red-400">5M+</p>
-          <p class="text-[11px] text-earth-50/50 mt-1">Cattle abandoned after they stop producing milk</p>
+          <p class="text-[11px] text-earth-600 mt-1">Cattle abandoned after they stop producing milk</p>
         </div>
-        <div class="bg-earth-900/80 border border-saffron-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 1s;">
+        <div class="bg-earth-100/90 border border-orange-500/20 p-5 rounded-2xl text-center float-anim" style="animation-delay: 1s;">
           <p class="text-3xl mb-2">🍚</p>
-          <p class="text-2xl font-black text-leaf-400">35%</p>
-          <p class="text-[11px] text-earth-50/50 mt-1">Canteen waste is safe for animals — but gets dumped</p>
+          <p class="text-2xl font-black text-green-600">35%</p>
+          <p class="text-[11px] text-earth-600 mt-1">Canteen waste is safe for animals — but gets dumped</p>
         </div>
       </div>
-      <p class="text-earth-50/60 text-sm max-w-2xl leading-relaxed mb-8">
-        <strong class="text-saffron-400">EcoShare routes this rejected food</strong> to local shelters, street dog feeders, and Gaushalas — turning what canteens consider "waste" into life-saving meals. Every batch saved from the dustbin means another animal eats tonight.
+      <p class="text-earth-700 text-sm max-w-2xl leading-relaxed mb-8">
+        <strong class="text-orange-500">EcoShare routes this rejected food</strong> to local shelters, street dog feeders, and Gaushalas — turning what canteens consider "waste" into life-saving meals. Every batch saved from the dustbin means another animal eats tonight.
       </p>
       <div class="flex items-center gap-4">
-        <button onclick="nextAct(5)" class="bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-leaf-500/20 flex items-center gap-2">
+        <button onclick="nextAct(5)" class="bg-green-700 hover:bg-green-600 text-earth-900 font-bold px-6 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-green-600/20 flex items-center gap-2">
           <i class="fa-solid fa-bolt"></i> And the food even animals can't eat? <i class="fa-solid fa-chevron-right text-xs"></i>
         </button>
       </div>
@@ -284,104 +381,104 @@
 
     <!-- ACT 5: BIOGAS -->
     <section id="act-5" class="story-act hidden my-auto py-12">
-      <p class="text-leaf-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act V — Waste to Wheels</p>
-      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-50 mb-6 leading-tight">
+      <p class="text-green-600 text-xs font-mono font-bold tracking-widest uppercase mb-3">Act V — Waste to Wheels</p>
+      <h1 class="text-4xl md:text-6xl font-display font-black tracking-tight text-earth-900 mb-6 leading-tight">
         The leftover that even animals can't eat... <br>
-        <span class="text-leaf-400">can fuel your car tomorrow.</span>
+        <span class="text-green-600">can fuel your car tomorrow.</span>
       </h1>
-      <p class="text-earth-50/60 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
-        The truly rotten, spoiled, inedible food waste doesn't go to landfill — it goes into <strong class="text-leaf-400">biogas digesters</strong>. Through anaerobic decomposition, bacteria break it down into methane gas. When purified, this becomes <strong class="text-leaf-400">biomethane</strong> — chemically identical to CNG. India already runs buses on biogas. With enough campus food waste, <strong class="text-earth-50">we can power auto-rickshaws, bikes, and generators</strong> right from our canteens.
+      <p class="text-earth-700 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+        The truly rotten, spoiled, inedible food waste doesn't go to landfill — it goes into <strong class="text-green-600">biogas digesters</strong>. Through anaerobic decomposition, bacteria break it down into methane gas. When purified, this becomes <strong class="text-green-600">biomethane</strong> — chemically identical to CNG. India already runs buses on biogas. With enough campus food waste, <strong class="text-earth-900">we can power auto-rickshaws, bikes, and generators</strong> right from our canteens.
       </p>
 
       <!-- Car running highlight -->
-      <div class="bg-leaf-900/30 border border-leaf-500/20 rounded-2xl p-6 max-w-md mb-8">
+      <div class="bg-leaf-900/30 border border-green-500/20 rounded-2xl p-6 max-w-md mb-8">
         <div class="flex items-center gap-3 mb-3">
-          <div class="w-12 h-12 rounded-full bg-leaf-500/20 flex items-center justify-center text-2xl">🚗</div>
+          <div class="w-12 h-12 rounded-full bg-green-200 flex items-center justify-center text-2xl">🚗</div>
           <div>
-            <p class="text-sm font-bold text-leaf-400">Biogas = Biomethane = Vehicle Fuel</p>
-            <p class="text-xs text-earth-50/50">Same as CNG — engines run on it directly</p>
+            <p class="text-sm font-bold text-green-600">Biogas = Biomethane = Vehicle Fuel</p>
+            <p class="text-xs text-earth-600">Same as CNG — engines run on it directly</p>
           </div>
         </div>
-        <p class="text-xs text-earth-50/60 leading-relaxed"><strong class="text-earth-50">100 kg food waste → 60 m³ biogas → can run a car for 150 km.</strong> Scale this across 100 campuses and you have a fuel station that costs nothing — just waste.</p>
+        <p class="text-xs text-earth-700 leading-relaxed"><strong class="text-earth-900">100 kg food waste → 60 m³ biogas → can run a car for 150 km.</strong> Scale this across 100 campuses and you have a fuel station that costs nothing — just waste.</p>
       </div>
 
       <!-- Biogas Pipeline Visual -->
-      <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-6 max-w-3xl mb-8">
-        <p class="text-xs font-mono text-leaf-400 font-bold tracking-widest uppercase mb-4">The Biogas Pipeline</p>
+      <div class="bg-earth-100/70 border border-earth-300 rounded-2xl p-6 max-w-3xl mb-8">
+        <p class="text-xs font-mono text-green-600 font-bold tracking-widest uppercase mb-4">The Biogas Pipeline</p>
         <div class="flex flex-wrap items-center justify-center gap-2 md:gap-0">
-          <div class="bg-earth-800 rounded-xl px-4 py-3 text-center">
+          <div class="bg-earth-200 rounded-xl px-4 py-3 text-center">
             <p class="text-xl mb-1">🗑️</p>
-            <p class="text-[10px] font-bold text-earth-50">Food Waste</p>
+            <p class="text-[10px] font-bold text-earth-900">Food Waste</p>
           </div>
           <div class="hidden md:block w-12 h-1 flow-pipe rounded-full mx-1"></div>
-          <div class="md:hidden text-earth-50/30 text-lg">→</div>
-          <div class="bg-earth-800 rounded-xl px-4 py-3 text-center">
+          <div class="md:hidden text-earth-400 text-lg">→</div>
+          <div class="bg-earth-200 rounded-xl px-4 py-3 text-center">
             <p class="text-xl mb-1">🦠</p>
-            <p class="text-[10px] font-bold text-earth-50">Anaerobic<br>Digester</p>
+            <p class="text-[10px] font-bold text-earth-900">Anaerobic<br>Digester</p>
           </div>
           <div class="hidden md:block w-12 h-1 flow-pipe rounded-full mx-1"></div>
-          <div class="md:hidden text-earth-50/30 text-lg">→</div>
-          <div class="bg-earth-800 rounded-xl px-4 py-3 text-center">
+          <div class="md:hidden text-earth-400 text-lg">→</div>
+          <div class="bg-earth-200 rounded-xl px-4 py-3 text-center">
             <p class="text-xl mb-1">💨</p>
-            <p class="text-[10px] font-bold text-earth-50">Raw<br>Methane</p>
+            <p class="text-[10px] font-bold text-earth-900">Raw<br>Methane</p>
           </div>
           <div class="hidden md:block w-12 h-1 flow-pipe rounded-full mx-1"></div>
-          <div class="md:hidden text-earth-50/30 text-lg">→</div>
-          <div class="bg-earth-800 rounded-xl px-4 py-3 text-center">
+          <div class="md:hidden text-earth-400 text-lg">→</div>
+          <div class="bg-earth-200 rounded-xl px-4 py-3 text-center">
             <p class="text-xl mb-1">🔬</p>
-            <p class="text-[10px] font-bold text-earth-50">Purification<br>& Storage</p>
+            <p class="text-[10px] font-bold text-earth-900">Purification<br>& Storage</p>
           </div>
           <div class="hidden md:block w-12 h-1 flow-pipe rounded-full mx-1"></div>
-          <div class="md:hidden text-earth-50/30 text-lg">→</div>
-          <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-4 py-3 text-center">
+          <div class="md:hidden text-earth-400 text-lg">→</div>
+          <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-4 py-3 text-center">
             <p class="text-xl mb-1">⚡</p>
-            <p class="text-[10px] font-bold text-leaf-400">Clean<br>Biomethane</p>
+            <p class="text-[10px] font-bold text-green-600">Clean<br>Biomethane</p>
           </div>
           <div class="hidden md:block w-12 h-1 flow-pipe rounded-full mx-1"></div>
-          <div class="md:hidden text-earth-50/30 text-lg">→</div>
-          <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-4 py-3 text-center float-anim">
+          <div class="md:hidden text-earth-400 text-lg">→</div>
+          <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-4 py-3 text-center float-anim">
             <p class="text-xl mb-1">🚗</p>
-            <p class="text-[10px] font-bold text-leaf-400">Run Cars<br>& Engines</p>
+            <p class="text-[10px] font-bold text-green-600">Run Cars<br>& Engines</p>
           </div>
         </div>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mb-8">
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-2xl font-black text-leaf-400">0.6 m³</p>
-          <p class="text-xs text-earth-50/50 mt-1">Biogas per kg waste</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-2xl font-black text-green-600">0.6 m³</p>
+          <p class="text-xs text-earth-600 mt-1">Biogas per kg waste</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-2xl font-black text-saffron-400">1.5 km</p>
-          <p class="text-xs text-earth-50/50 mt-1">Car range per kg waste</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-2xl font-black text-orange-500">1.5 km</p>
+          <p class="text-xs text-earth-600 mt-1">Car range per kg waste</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
           <p class="text-2xl font-black text-red-400">70%</p>
-          <p class="text-xs text-earth-50/50 mt-1">Methane in purified gas</p>
+          <p class="text-xs text-earth-600 mt-1">Methane in purified gas</p>
         </div>
-        <div class="bg-earth-900/80 border border-leaf-500/20 p-4 rounded-2xl">
-          <p class="text-2xl font-black text-leaf-400">₹0</p>
-          <p class="text-xs text-earth-50/50 mt-1">Fuel cost from waste</p>
+        <div class="bg-earth-100/90 border border-green-500/20 p-4 rounded-2xl">
+          <p class="text-2xl font-black text-green-600">₹0</p>
+          <p class="text-xs text-earth-600 mt-1">Fuel cost from waste</p>
         </div>
       </div>
 
       <div class="flex items-center gap-4">
-        <button onclick="launchPlatform()" class="bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-extrabold px-8 py-4 rounded-full text-base transition-all shadow-xl shadow-leaf-500/30 flex items-center gap-3">
+        <button onclick="launchPlatform()" class="bg-green-700 hover:bg-green-600 text-earth-900 font-extrabold px-8 py-4 rounded-full text-base transition-all shadow-xl shadow-green-600/30 flex items-center gap-3">
           <i class="fa-solid fa-rocket"></i> Launch EcoShare Platform
         </button>
       </div>
     </section>
 
     <!-- Story Progress Footer -->
-    <footer class="flex items-center justify-between border-t border-earth-800/80 pt-6">
+    <footer class="flex items-center justify-between border-t border-earth-300/80 pt-6">
       <div class="flex items-center gap-2" id="story-dots">
-        <span class="w-8 h-2 rounded-full bg-leaf-500 transition-all" id="dot-1"></span>
-        <span class="w-2 h-2 rounded-full bg-earth-800 transition-all" id="dot-2"></span>
-        <span class="w-2 h-2 rounded-full bg-earth-800 transition-all" id="dot-3"></span>
-        <span class="w-2 h-2 rounded-full bg-earth-800 transition-all" id="dot-4"></span>
-        <span class="w-2 h-2 rounded-full bg-earth-800 transition-all" id="dot-5"></span>
+        <span class="w-8 h-2 rounded-full bg-green-700 transition-all" id="dot-1"></span>
+        <span class="w-2 h-2 rounded-full bg-earth-200 transition-all" id="dot-2"></span>
+        <span class="w-2 h-2 rounded-full bg-earth-200 transition-all" id="dot-3"></span>
+        <span class="w-2 h-2 rounded-full bg-earth-200 transition-all" id="dot-4"></span>
+        <span class="w-2 h-2 rounded-full bg-earth-200 transition-all" id="dot-5"></span>
       </div>
-      <span class="text-xs text-earth-50/40 font-mono">Designed for FusioniX '26</span>
+      <span class="text-xs text-earth-500 font-mono">Designed for FusioniX '26</span>
     </footer>
   </div>
 
@@ -389,10 +486,10 @@
   <!-- LOGIN MODAL OVERLAY                        -->
   <!-- ========================================== -->
   <div id="login-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-    <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6 md:p-8 max-w-md w-full mx-4" onclick="event.stopPropagation()">
+    <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6 md:p-8 max-w-md w-full mx-4" onclick="event.stopPropagation()">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-display font-bold text-earth-50">Sign in to EcoShare</h2>
-        <button onclick="closeLoginModal()" class="text-earth-50/40 hover:text-earth-50 text-xl">&times;</button>
+        <h2 class="text-lg font-display font-bold text-earth-900">Sign in to EcoShare</h2>
+        <button onclick="closeLoginModal()" class="text-earth-500 hover:text-earth-900 text-xl">&times;</button>
       </div>
 
       <!-- Google Sign-In -->
@@ -402,22 +499,22 @@
       </button>
 
       <div class="flex items-center gap-3 mb-4">
-        <div class="flex-1 h-px bg-earth-800"></div>
-        <span class="text-xs text-earth-50/40">or</span>
-        <div class="flex-1 h-px bg-earth-800"></div>
+        <div class="flex-1 h-px bg-earth-200"></div>
+        <span class="text-xs text-earth-500">or</span>
+        <div class="flex-1 h-px bg-earth-200"></div>
       </div>
 
       <!-- Email/Password -->
       <form onsubmit="loginWithEmail(event)" class="space-y-3">
         <input type="email" id="auth-email" placeholder="Email address" required
-          class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/30">
+          class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-400">
         <input type="password" id="auth-password" placeholder="Password (min 6 chars)" minlength="6" required
-          class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/30">
+          class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-400">
         <div class="flex gap-2">
-          <button type="submit" class="flex-1 bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-sm">
+          <button type="submit" class="flex-1 bg-green-700 hover:bg-green-600 text-earth-900 font-bold py-2.5 rounded-xl transition-all text-sm">
             Sign In
           </button>
-          <button type="button" onclick="signUpEmail()" class="flex-1 bg-earth-800 hover:bg-earth-700 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-sm">
+          <button type="button" onclick="signUpEmail()" class="flex-1 bg-earth-200 hover:bg-earth-700 text-earth-900 font-bold py-2.5 rounded-xl transition-all text-sm">
             Sign Up
           </button>
         </div>
@@ -425,11 +522,11 @@
 
       <p id="auth-error" class="text-xs text-red-400 mt-3 hidden"></p>
 
-      <div class="mt-5 pt-4 border-t border-earth-800/60">
-        <button onclick="demoLogin()" class="w-full bg-saffron-500 hover:bg-saffron-400 text-earth-950 font-bold py-2.5 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+      <div class="mt-5 pt-4 border-t border-earth-300/60">
+        <button onclick="demoLogin()" class="w-full bg-orange-500 hover:bg-orange-400 text-earth-950 font-bold py-2.5 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
           <i class="fa-solid fa-flask"></i> Demo Login (Judge)
         </button>
-        <p class="text-[10px] text-earth-50/30 text-center mt-2">For demo purposes — works immediately</p>
+        <p class="text-[10px] text-earth-400 text-center mt-2">For demo purposes — works immediately</p>
       </div>
     </div>
   </div>
@@ -440,42 +537,42 @@
   <div id="platform-container" class="hidden min-h-screen flex flex-col relative z-20">
 
     <!-- Top Header -->
-    <header class="border-b border-earth-800/80 bg-earth-950/80 backdrop-blur-xl sticky top-0 z-50">
+    <header class="border-b border-earth-300/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
       <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="replayStory()">
-          <div class="w-8 h-8 rounded-full bg-leaf-500 text-earth-50 flex items-center justify-center font-bold">
+          <div class="w-8 h-8 rounded-full bg-green-700 text-earth-900 flex items-center justify-center font-bold">
             <i class="fa-solid fa-leaf text-sm"></i>
           </div>
-          <span class="text-lg font-display font-black tracking-tight text-earth-50">EcoShare<span class="text-leaf-400">.</span></span>
+          <span class="text-lg font-display font-black tracking-tight text-earth-900">EcoShare<span class="text-green-600">.</span></span>
         </div>
 
         <nav class="flex items-center space-x-1 md:space-x-2 overflow-x-auto">
-          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold bg-leaf-500 text-earth-50 whitespace-nowrap">
+          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold bg-green-700 text-earth-900 whitespace-nowrap">
             <i class="fa-solid fa-bowl-food mr-1 hidden md:inline"></i> Food Feed
           </button>
-          <button onclick="switchTab('list')" id="nav-list" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-earth-50 whitespace-nowrap">
+          <button onclick="switchTab('list')" id="nav-list" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
             <i class="fa-solid fa-plus mr-1 hidden md:inline"></i> Post Surplus
           </button>
-          <button onclick="switchTab('animal')" id="nav-animal" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-earth-50 whitespace-nowrap">
+          <button onclick="switchTab('animal')" id="nav-animal" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
             <i class="fa-solid fa-paw mr-1 hidden md:inline"></i> Animal Rescue
           </button>
-          <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-earth-50 whitespace-nowrap">
+          <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
             <i class="fa-solid fa-bolt mr-1 hidden md:inline"></i> Biogas
           </button>
-          <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-saffron-400 whitespace-nowrap hidden">
+          <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-orange-500 whitespace-nowrap hidden">
             <i class="fa-solid fa-crown mr-1 hidden md:inline"></i> Judge Panel
           </button>
-          <button onclick="replayStory()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-earth-50/40 hover:text-saffron-400 border border-earth-800 whitespace-nowrap hidden md:block">
+          <button onclick="replayStory()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-earth-500 hover:text-orange-500 border border-earth-300 whitespace-nowrap hidden md:block">
             <i class="fa-solid fa-play text-[10px] mr-1"></i> Story
           </button>
           <div id="auth-header" class="flex items-center">
-            <button id="btn-login" onclick="showLoginModal()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-leaf-500/20 text-leaf-400 border border-leaf-500/30 hover:bg-leaf-500/30 whitespace-nowrap">
+            <button id="btn-login" onclick="showLoginModal()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-green-200 text-green-600 border border-green-500/30 hover:bg-green-300 whitespace-nowrap">
               <i class="fa-solid fa-user mr-1"></i> Login
             </button>
             <div id="btn-user" class="hidden items-center gap-2">
-              <span id="user-name" class="text-xs text-earth-50/80 whitespace-nowrap hidden md:inline"></span>
-              <span class="text-[10px] bg-saffron-500/20 text-saffron-400 px-2 py-0.5 rounded-full border border-saffron-500/30 whitespace-nowrap">👑 Judge</span>
-              <button onclick="logoutUser()" class="px-2 py-1.5 rounded-full text-xs text-earth-50/40 hover:text-red-400 whitespace-nowrap" title="Logout">
+              <span id="user-name" class="text-xs text-earth-800/80 whitespace-nowrap hidden md:inline"></span>
+              <span class="text-[10px] bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full border border-orange-500/30 whitespace-nowrap">👑 Judge</span>
+              <button onclick="logoutUser()" class="px-2 py-1.5 rounded-full text-xs text-earth-500 hover:text-red-400 whitespace-nowrap" title="Logout">
                 <i class="fa-solid fa-right-from-bracket"></i>
               </button>
             </div>
@@ -488,96 +585,96 @@
 
       <!-- Metrics Bar -->
       <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">Meals Redirected</p>
-          <p class="text-2xl md:text-3xl font-black text-earth-50" id="stat-meals">0</p>
-          <p class="text-[10px] text-leaf-400 mt-1">Saved from trash</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">Meals Redirected</p>
+          <p class="text-2xl md:text-3xl font-black text-earth-900" id="stat-meals">0</p>
+          <p class="text-[10px] text-green-600 mt-1">Saved from trash</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">CO<sub>2</sub> Prevented</p>
-          <p class="text-2xl md:text-3xl font-black text-leaf-400"><span id="stat-co2">0</span><span class="text-xs text-earth-50/40"> kg</span></p>
-          <p class="text-[10px] text-earth-50/50 mt-1">Greenhouse offset</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">CO<sub>2</sub> Prevented</p>
+          <p class="text-2xl md:text-3xl font-black text-green-600"><span id="stat-co2">0</span><span class="text-xs text-earth-500"> kg</span></p>
+          <p class="text-[10px] text-earth-600 mt-1">Greenhouse offset</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">Active Batches</p>
-          <p class="text-2xl md:text-3xl font-black text-earth-50" id="stat-active">0</p>
-          <p class="text-[10px] text-earth-50/50 mt-1">Ready for pickup</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">Active Batches</p>
+          <p class="text-2xl md:text-3xl font-black text-earth-900" id="stat-active">0</p>
+          <p class="text-[10px] text-earth-600 mt-1">Ready for pickup</p>
         </div>
-        <div class="bg-earth-900/80 border border-earth-800 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">Local Partners</p>
-          <p class="text-2xl md:text-3xl font-black text-earth-50">32</p>
-          <p class="text-[10px] text-earth-50/50 mt-1">Clubs & shelters</p>
+        <div class="bg-earth-100/90 border border-earth-300 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">Local Partners</p>
+          <p class="text-2xl md:text-3xl font-black text-earth-900">32</p>
+          <p class="text-[10px] text-earth-600 mt-1">Clubs & shelters</p>
         </div>
-        <div class="bg-earth-900/80 border border-saffron-500/20 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">🐾 Animals Fed</p>
-          <p class="text-2xl md:text-3xl font-black text-saffron-400" id="stat-animals">0</p>
-          <p class="text-[10px] text-earth-50/50 mt-1">This month</p>
+        <div class="bg-earth-100/90 border border-orange-500/20 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">🐾 Animals Fed</p>
+          <p class="text-2xl md:text-3xl font-black text-orange-500" id="stat-animals">0</p>
+          <p class="text-[10px] text-earth-600 mt-1">This month</p>
         </div>
-        <div class="bg-earth-900/80 border border-leaf-500/20 p-4 rounded-2xl">
-          <p class="text-[10px] font-mono uppercase text-earth-50/40 mb-1">⚡ Biogas (L)</p>
-          <p class="text-2xl md:text-3xl font-black text-leaf-400" id="stat-biogas">0</p>
-          <p class="text-[10px] text-earth-50/50 mt-1">Generated</p>
+        <div class="bg-earth-100/90 border border-green-500/20 p-4 rounded-2xl">
+          <p class="text-[10px] font-mono uppercase text-earth-500 mb-1">⚡ Biogas (L)</p>
+          <p class="text-2xl md:text-3xl font-black text-green-600" id="stat-biogas">0</p>
+          <p class="text-[10px] text-earth-600 mt-1">Generated</p>
         </div>
       </section>
 
       <!-- CASCADE MODEL FLOWCHART -->
-      <section class="bg-earth-900/50 border border-earth-800 rounded-2xl p-4 md:p-6 mb-8 overflow-x-auto">
+      <section class="bg-earth-50/50 border border-earth-300 rounded-2xl p-4 md:p-6 mb-8 overflow-x-auto">
         <div class="flex items-center gap-2 mb-4">
-          <span class="text-xs font-mono bg-leaf-500/10 text-leaf-400 px-2 py-1 rounded-full border border-leaf-500/20 font-bold">ZERO WASTE CASCADE</span>
-          <span class="text-[10px] text-earth-50/40">Every kg finds a home</span>
+          <span class="text-xs font-mono bg-green-100 text-green-600 px-2 py-1 rounded-full border border-green-500/20 font-bold">ZERO WASTE CASCADE</span>
+          <span class="text-[10px] text-earth-500">Every kg finds a home</span>
         </div>
         <div class="flex flex-nowrap md:flex-wrap items-center justify-start md:justify-center gap-2 min-w-[500px]">
-          <div class="bg-earth-800 rounded-xl px-3 py-2 text-center shrink-0">
+          <div class="bg-earth-200 rounded-xl px-3 py-2 text-center shrink-0">
             <p class="text-xl mb-0.5">🗑️</p>
-            <p class="text-[9px] font-bold text-earth-50 whitespace-nowrap">Food Waste<br>Detected</p>
+            <p class="text-[9px] font-bold text-earth-900 whitespace-nowrap">Food Waste<br>Detected</p>
           </div>
-          <div class="text-earth-50/30 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
+          <div class="text-earth-400 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
           <div class="flex flex-col items-center">
-            <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-3 py-2 text-center shrink-0">
+            <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-3 py-2 text-center shrink-0">
               <p class="text-lg mb-0.5">🍽️</p>
-              <p class="text-[9px] font-bold text-leaf-400 whitespace-nowrap">Feed People</p>
+              <p class="text-[9px] font-bold text-green-600 whitespace-nowrap">Feed People</p>
             </div>
             <span class="text-[7px] text-leaf-500/60 mt-0.5">Edible for humans</span>
           </div>
-          <div class="text-earth-50/30 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
+          <div class="text-earth-400 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
           <div class="flex flex-col items-center">
-            <div class="bg-saffron-600/40 border border-saffron-500/30 rounded-xl px-3 py-2 text-center shrink-0">
+            <div class="bg-saffron-600/40 border border-orange-500/30 rounded-xl px-3 py-2 text-center shrink-0">
               <p class="text-lg mb-0.5">🐾</p>
-              <p class="text-[9px] font-bold text-saffron-400 whitespace-nowrap">Feed Animals</p>
+              <p class="text-[9px] font-bold text-orange-500 whitespace-nowrap">Feed Animals</p>
             </div>
-            <span class="text-[7px] text-saffron-500/60 mt-0.5">Not for humans</span>
+            <span class="text-[7px] text-orange-600/60 mt-0.5">Not for humans</span>
           </div>
-          <div class="text-earth-50/30 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
+          <div class="text-earth-400 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
           <div class="flex flex-col items-center">
-            <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-3 py-2 text-center shrink-0">
+            <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-3 py-2 text-center shrink-0">
               <p class="text-lg mb-0.5">⚡</p>
-              <p class="text-[9px] font-bold text-leaf-400 whitespace-nowrap">Biogas Fuel</p>
+              <p class="text-[9px] font-bold text-green-600 whitespace-nowrap">Biogas Fuel</p>
             </div>
             <span class="text-[7px] text-leaf-500/60 mt-0.5">Truly rotten</span>
           </div>
-          <div class="text-earth-50/30 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
+          <div class="text-earth-400 shrink-0"><i class="fa-solid fa-arrow-right text-xs"></i></div>
           <div class="flex flex-col items-center">
-            <div class="bg-earth-700/60 border border-earth-600/30 rounded-xl px-3 py-2 text-center shrink-0">
+            <div class="bg-earth-700/60 border border-earth-400/30 rounded-xl px-3 py-2 text-center shrink-0">
               <p class="text-lg mb-0.5">🌱</p>
-              <p class="text-[9px] font-bold text-earth-50/60 whitespace-nowrap">Compost</p>
+              <p class="text-[9px] font-bold text-earth-700 whitespace-nowrap">Compost</p>
             </div>
-            <span class="text-[7px] text-earth-50/30 mt-0.5">Nothing wasted</span>
+            <span class="text-[7px] text-earth-400 mt-0.5">Nothing wasted</span>
           </div>
         </div>
         <!-- Live cascade counter -->
-        <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-earth-800/60 text-[10px]">
-          <span><span class="text-leaf-400 font-bold" id="cascade-human">0</span> kg → People</span>
-          <span><span class="text-saffron-400 font-bold" id="cascade-animal">0</span> kg → Animals</span>
-          <span><span class="text-leaf-400 font-bold" id="cascade-biogas">0</span> kg → Biogas</span>
-          <span><span class="text-earth-50/40 font-bold" id="cascade-total">0</span> kg Total Diverted</span>
+        <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-earth-300/60 text-[10px]">
+          <span><span class="text-green-600 font-bold" id="cascade-human">0</span> kg → People</span>
+          <span><span class="text-orange-500 font-bold" id="cascade-animal">0</span> kg → Animals</span>
+          <span><span class="text-green-600 font-bold" id="cascade-biogas">0</span> kg → Biogas</span>
+          <span><span class="text-earth-500 font-bold" id="cascade-total">0</span> kg Total Diverted</span>
         </div>
       </section>
 
       <!-- TAB 1: BROWSE FOOD -->
       <section id="tab-browse" class="tab-content">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-lg font-display font-bold text-earth-50">Available Food Batches</h2>
-          <span class="text-xs text-earth-50/40">Updated in real-time</span>
+          <h2 class="text-lg font-display font-bold text-earth-900">Available Food Batches</h2>
+          <span class="text-xs text-earth-500">Updated in real-time</span>
         </div>
         <div id="food-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- JS Rendered -->
@@ -586,38 +683,38 @@
 
       <!-- TAB 2: POST SURPLUS FORM -->
       <section id="tab-list" class="tab-content hidden max-w-lg mx-auto">
-        <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6 shadow-xl">
-          <h2 class="text-lg font-display font-bold text-earth-50 mb-1">List Surplus Food</h2>
-          <p class="text-xs text-earth-50/50 mb-6">Prevent fresh food from reaching trash bins.</p>
+        <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6 shadow-xl">
+          <h2 class="text-lg font-display font-bold text-earth-900 mb-1">List Surplus Food</h2>
+          <p class="text-xs text-earth-600 mb-6">Prevent fresh food from reaching trash bins.</p>
 
           <form onsubmit="handleFormSubmit(event)" class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-earth-50/50 uppercase mb-1">Food Item</label>
+              <label class="block text-xs font-bold text-earth-600 uppercase mb-1">Food Item</label>
               <input type="text" id="input-title" required placeholder="e.g. Veg Biryani (20 Portions)"
-                class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/20">
+                class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-800/20">
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-bold text-earth-50/50 uppercase mb-1">Pickup Location</label>
+                <label class="block text-xs font-bold text-earth-600 uppercase mb-1">Pickup Location</label>
                 <input type="text" id="input-location" required placeholder="Hostel 4 Mess"
-                  class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/20">
+                  class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-800/20">
               </div>
               <div>
-                <label class="block text-xs font-bold text-earth-50/50 uppercase mb-1">Portions</label>
+                <label class="block text-xs font-bold text-earth-600 uppercase mb-1">Portions</label>
                 <input type="number" id="input-quantity" min="1" required placeholder="15"
-                  class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/20">
+                  class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-800/20">
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-earth-50/50 uppercase mb-1">Donor Name</label>
+              <label class="block text-xs font-bold text-earth-600 uppercase mb-1">Donor Name</label>
               <input type="text" id="input-donor" required placeholder="Campus Mess Committee"
-                class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/20">
+                class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500 placeholder:text-earth-800/20">
             </div>
             <div class="flex items-center gap-2">
               <input type="checkbox" id="input-animal-safe" class="accent-saffron-500 w-4 h-4">
-              <label for="input-animal-safe" class="text-xs text-earth-50/60">Also suitable for animals 🐾</label>
+              <label for="input-animal-safe" class="text-xs text-earth-700">Also suitable for animals 🐾</label>
             </div>
-            <button type="submit" class="w-full bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold py-3 rounded-xl transition-all text-sm">
+            <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-earth-900 font-bold py-3 rounded-xl transition-all text-sm">
               Publish Batch
             </button>
           </form>
@@ -627,29 +724,29 @@
       <!-- TAB 3: ANIMAL RESCUE -->
       <section id="tab-animal" class="tab-content hidden">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-lg font-display font-bold text-earth-50">
-            <i class="fa-solid fa-paw text-saffron-400 mr-2"></i>Animal Rescue Feed
+          <h2 class="text-lg font-display font-bold text-earth-900">
+            <i class="fa-solid fa-paw text-orange-500 mr-2"></i>Animal Rescue Feed
           </h2>
-          <span class="text-xs text-earth-50/40">Food safe for strays & shelter animals</span>
+          <span class="text-xs text-earth-500">Food safe for strays & shelter animals</span>
         </div>
 
         <!-- Animal Stats Row -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-saffron-400" id="animal-meals">89</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">Meals to Animals</p>
+          <div class="bg-earth-100/70 border border-orange-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-orange-500" id="animal-meals">89</p>
+            <p class="text-[10px] text-earth-600 mt-1">Meals to Animals</p>
           </div>
-          <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-earth-50">12</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">Partner Shelters</p>
+          <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-earth-900">12</p>
+            <p class="text-[10px] text-earth-600 mt-1">Partner Shelters</p>
           </div>
-          <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-leaf-400">47</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">Animals Fed This Month</p>
+          <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-green-600">47</p>
+            <p class="text-[10px] text-earth-600 mt-1">Animals Fed This Month</p>
           </div>
-          <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-earth-50">3</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">Active Batches</p>
+          <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-earth-900">3</p>
+            <p class="text-[10px] text-earth-600 mt-1">Active Batches</p>
           </div>
         </div>
 
@@ -660,27 +757,27 @@
 
         <!-- Partner Shelters -->
         <div class="mt-8">
-          <h3 class="text-sm font-bold text-earth-50/60 uppercase tracking-wide mb-4">Partner Shelters & Feeding Groups</h3>
+          <h3 class="text-sm font-bold text-earth-700 uppercase tracking-wide mb-4">Partner Shelters & Feeding Groups</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-saffron-500/20 flex items-center justify-center text-lg">🐕</div>
+            <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">🐕</div>
               <div>
-                <p class="text-sm font-bold text-earth-50">Stray Friends Society</p>
-                <p class="text-[10px] text-earth-50/40">Sector 12, near Bus Stand</p>
+                <p class="text-sm font-bold text-earth-900">Stray Friends Society</p>
+                <p class="text-[10px] text-earth-500">Sector 12, near Bus Stand</p>
               </div>
             </div>
-            <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-saffron-500/20 flex items-center justify-center text-lg">🐄</div>
+            <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">🐄</div>
               <div>
-                <p class="text-sm font-bold text-earth-50">Gaushala Trust</p>
-                <p class="text-[10px] text-earth-50/40">Old Highway Road</p>
+                <p class="text-sm font-bold text-earth-900">Gaushala Trust</p>
+                <p class="text-[10px] text-earth-500">Old Highway Road</p>
               </div>
             </div>
-            <div class="bg-earth-900/60 border border-earth-800 rounded-xl p-4 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-saffron-500/20 flex items-center justify-center text-lg">🐱</div>
+            <div class="bg-earth-100/70 border border-earth-300 rounded-xl p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">🐱</div>
               <div>
-                <p class="text-sm font-bold text-earth-50">Paw Rescue Volunteers</p>
-                <p class="text-[10px] text-earth-50/40">Campus Area, Gate 3</p>
+                <p class="text-sm font-bold text-earth-900">Paw Rescue Volunteers</p>
+                <p class="text-[10px] text-earth-500">Campus Area, Gate 3</p>
               </div>
             </div>
           </div>
@@ -690,184 +787,184 @@
       <!-- TAB 4: BIOGAS TRACKER -->
       <section id="tab-biogas" class="tab-content hidden">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-lg font-display font-bold text-earth-50">
-            <i class="fa-solid fa-bolt text-leaf-400 mr-2"></i>Biogas Energy Tracker
+          <h2 class="text-lg font-display font-bold text-earth-900">
+            <i class="fa-solid fa-bolt text-green-600 mr-2"></i>Biogas Energy Tracker
           </h2>
-          <span class="text-xs text-earth-50/40">Turning waste into clean energy</span>
+          <span class="text-xs text-earth-500">Turning waste into clean energy</span>
         </div>
 
         <!-- Biogas Pipeline (smaller version) -->
-        <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-6 mb-6">
+        <div class="bg-earth-100/70 border border-earth-300 rounded-2xl p-6 mb-6">
           <div class="flex flex-wrap items-center justify-center gap-2 md:gap-0">
-            <div class="bg-earth-800 rounded-xl px-3 py-2 text-center">
+            <div class="bg-earth-200 rounded-xl px-3 py-2 text-center">
               <p class="text-lg mb-1">🗑️</p>
-              <p class="text-[9px] font-bold text-earth-50">Waste</p>
+              <p class="text-[9px] font-bold text-earth-900">Waste</p>
             </div>
             <div class="hidden md:block w-10 h-0.5 flow-pipe rounded-full mx-1"></div>
-            <div class="md:hidden text-earth-50/30">→</div>
-            <div class="bg-earth-800 rounded-xl px-3 py-2 text-center">
+            <div class="md:hidden text-earth-400">→</div>
+            <div class="bg-earth-200 rounded-xl px-3 py-2 text-center">
               <p class="text-lg mb-1">🦠</p>
-              <p class="text-[9px] font-bold text-earth-50">Digest</p>
+              <p class="text-[9px] font-bold text-earth-900">Digest</p>
             </div>
             <div class="hidden md:block w-10 h-0.5 flow-pipe rounded-full mx-1"></div>
-            <div class="md:hidden text-earth-50/30">→</div>
-            <div class="bg-earth-800 rounded-xl px-3 py-2 text-center">
+            <div class="md:hidden text-earth-400">→</div>
+            <div class="bg-earth-200 rounded-xl px-3 py-2 text-center">
               <p class="text-lg mb-1">💨</p>
-              <p class="text-[9px] font-bold text-earth-50">Methane</p>
+              <p class="text-[9px] font-bold text-earth-900">Methane</p>
             </div>
             <div class="hidden md:block w-10 h-0.5 flow-pipe rounded-full mx-1"></div>
-            <div class="md:hidden text-earth-50/30">→</div>
-            <div class="bg-earth-800 rounded-xl px-3 py-2 text-center">
+            <div class="md:hidden text-earth-400">→</div>
+            <div class="bg-earth-200 rounded-xl px-3 py-2 text-center">
               <p class="text-lg mb-1">🔬</p>
-              <p class="text-[9px] font-bold text-earth-50">Purify</p>
+              <p class="text-[9px] font-bold text-earth-900">Purify</p>
             </div>
             <div class="hidden md:block w-10 h-0.5 flow-pipe rounded-full mx-1"></div>
-            <div class="md:hidden text-earth-50/30">→</div>
-            <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-3 py-2 text-center">
+            <div class="md:hidden text-earth-400">→</div>
+            <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-3 py-2 text-center">
               <p class="text-lg mb-1">⚡</p>
-              <p class="text-[9px] font-bold text-leaf-400">Biomethane</p>
+              <p class="text-[9px] font-bold text-green-600">Biomethane</p>
             </div>
             <div class="hidden md:block w-10 h-0.5 flow-pipe rounded-full mx-1"></div>
-            <div class="md:hidden text-earth-50/30">→</div>
-            <div class="bg-leaf-600/40 border border-leaf-500/30 rounded-xl px-3 py-2 text-center float-anim">
+            <div class="md:hidden text-earth-400">→</div>
+            <div class="bg-green-700/30 border border-green-500/30 rounded-xl px-3 py-2 text-center float-anim">
               <p class="text-lg mb-1">🚗</p>
-              <p class="text-[9px] font-bold text-leaf-400">Run Cars</p>
+              <p class="text-[9px] font-bold text-green-600">Run Cars</p>
             </div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Calculator -->
-          <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6">
-            <h3 class="text-sm font-bold text-earth-50 mb-1">Biogas Calculator</h3>
-            <p class="text-[11px] text-earth-50/50 mb-5">Enter food waste to see potential energy output</p>
+          <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6">
+            <h3 class="text-sm font-bold text-earth-900 mb-1">Biogas Calculator</h3>
+            <p class="text-[11px] text-earth-600 mb-5">Enter food waste to see potential energy output</p>
 
             <div class="space-y-4">
               <div>
-                <label class="block text-xs font-bold text-earth-50/50 uppercase mb-1">Food Waste (kg)</label>
+                <label class="block text-xs font-bold text-earth-600 uppercase mb-1">Food Waste (kg)</label>
                 <input type="number" id="biogas-input" min="1" value="10" placeholder="10"
-                  class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500"
+                  class="w-full px-4 py-2.5 rounded-xl bg-white border border-earth-300 text-sm text-earth-900 focus:outline-none focus:border-leaf-500"
                   oninput="calculateBiogas()">
               </div>
 
-              <button onclick="calculateBiogas()" class="w-full bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-sm">
+              <button onclick="calculateBiogas()" class="w-full bg-green-700 hover:bg-green-600 text-earth-900 font-bold py-2.5 rounded-xl transition-all text-sm">
                 Calculate Output
               </button>
             </div>
 
             <!-- Results -->
             <div id="biogas-results" class="mt-6 space-y-3">
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-wind mr-2 text-leaf-400"></i>Biogas Produced</span>
-                <span class="text-sm font-bold text-leaf-400" id="result-biogas">6.0 m³</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-wind mr-2 text-green-600"></i>Biogas Produced</span>
+                <span class="text-sm font-bold text-green-600" id="result-biogas">6.0 m³</span>
               </div>
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-car mr-2 text-leaf-400"></i>Car Can Run</span>
-                <span class="text-sm font-bold text-leaf-400" id="result-car">9 km</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-car mr-2 text-green-600"></i>Car Can Run</span>
+                <span class="text-sm font-bold text-green-600" id="result-car">9 km</span>
               </div>
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-bolt mr-2 text-saffron-400"></i>Energy Generated</span>
-                <span class="text-sm font-bold text-saffron-400" id="result-energy">21.0 kWh</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-bolt mr-2 text-orange-500"></i>Energy Generated</span>
+                <span class="text-sm font-bold text-orange-500" id="result-energy">21.0 kWh</span>
               </div>
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-fire mr-2 text-red-400"></i>Methane Content</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-fire mr-2 text-red-400"></i>Methane Content</span>
                 <span class="text-sm font-bold text-red-400" id="result-methane">4.2 m³</span>
               </div>
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-utensils mr-2 text-earth-50"></i>Equivalent Meals Powered</span>
-                <span class="text-sm font-bold text-earth-50" id="result-meals">7 meals</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-utensils mr-2 text-earth-900"></i>Equivalent Meals Powered</span>
+                <span class="text-sm font-bold text-earth-900" id="result-meals">7 meals</span>
               </div>
-              <div class="flex justify-between items-center bg-earth-950 rounded-xl px-4 py-3">
-                <span class="text-xs text-earth-50/50"><i class="fa-solid fa-cloud mr-2 text-leaf-400"></i>CO<sub>2</sub> Offset</span>
-                <span class="text-sm font-bold text-leaf-400" id="result-co2">12.5 kg</span>
+              <div class="flex justify-between items-center bg-white rounded-xl px-4 py-3">
+                <span class="text-xs text-earth-600"><i class="fa-solid fa-cloud mr-2 text-green-600"></i>CO<sub>2</sub> Offset</span>
+                <span class="text-sm font-bold text-green-600" id="result-co2">12.5 kg</span>
               </div>
-              <div class="flex justify-between items-center bg-leaf-900/30 border border-leaf-500/20 rounded-xl px-4 py-3">
-                <span class="text-xs text-leaf-400/80"><i class="fa-solid fa-indian-rupee-sign mr-2"></i>Fuel Saved vs Petrol</span>
-                <span class="text-sm font-bold text-leaf-400" id="result-savings">₹54</span>
+              <div class="flex justify-between items-center bg-leaf-900/30 border border-green-500/20 rounded-xl px-4 py-3">
+                <span class="text-xs text-green-600/80"><i class="fa-solid fa-indian-rupee-sign mr-2"></i>Fuel Saved vs Petrol</span>
+                <span class="text-sm font-bold text-green-600" id="result-savings">₹54</span>
               </div>
             </div>
           </div>
 
           <!-- Impact Stats -->
           <div class="space-y-4">
-            <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6">
-              <h3 class="text-sm font-bold text-earth-50 mb-4">Collective Impact</h3>
+            <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6">
+              <h3 class="text-sm font-bold text-earth-900 mb-4">Collective Impact</h3>
               <div class="space-y-4">
                 <div>
                   <div class="flex justify-between text-xs mb-1">
-                    <span class="text-earth-50/50">Waste Diverted from Landfill</span>
-                    <span class="text-leaf-400 font-bold">240 kg</span>
+                    <span class="text-earth-600">Waste Diverted from Landfill</span>
+                    <span class="text-green-600 font-bold">240 kg</span>
                   </div>
-                  <div class="w-full bg-earth-950 rounded-full h-2">
-                    <div class="bg-leaf-500 h-2 rounded-full" style="width: 60%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span class="text-earth-50/50">Biogas Generated</span>
-                    <span class="text-saffron-400 font-bold">128 Liters</span>
-                  </div>
-                  <div class="w-full bg-earth-950 rounded-full h-2">
-                    <div class="bg-saffron-500 h-2 rounded-full" style="width: 45%"></div>
+                  <div class="w-full bg-white rounded-full h-2">
+                    <div class="bg-green-700 h-2 rounded-full" style="width: 60%"></div>
                   </div>
                 </div>
                 <div>
                   <div class="flex justify-between text-xs mb-1">
-                    <span class="text-earth-50/50">🚗 Equivalent Car Distance</span>
-                    <span class="text-leaf-400 font-bold">360 km</span>
+                    <span class="text-earth-600">Biogas Generated</span>
+                    <span class="text-orange-500 font-bold">128 Liters</span>
                   </div>
-                  <div class="w-full bg-earth-950 rounded-full h-2">
-                    <div class="bg-leaf-400 h-2 rounded-full" style="width: 50%"></div>
+                  <div class="w-full bg-white rounded-full h-2">
+                    <div class="bg-orange-500 h-2 rounded-full" style="width: 45%"></div>
                   </div>
                 </div>
                 <div>
                   <div class="flex justify-between text-xs mb-1">
-                    <span class="text-earth-50/50">Energy Produced</span>
-                    <span class="text-saffron-400 font-bold">52 kWh</span>
+                    <span class="text-earth-600">🚗 Equivalent Car Distance</span>
+                    <span class="text-green-600 font-bold">360 km</span>
                   </div>
-                  <div class="w-full bg-earth-950 rounded-full h-2">
+                  <div class="w-full bg-white rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-earth-600">Energy Produced</span>
+                    <span class="text-orange-500 font-bold">52 kWh</span>
+                  </div>
+                  <div class="w-full bg-white rounded-full h-2">
                     <div class="bg-saffron-400 h-2 rounded-full" style="width: 35%"></div>
                   </div>
                 </div>
                 <div>
                   <div class="flex justify-between text-xs mb-1">
-                    <span class="text-earth-50/50">💰 Fuel Cost Saved vs Petrol</span>
-                    <span class="text-leaf-400 font-bold">₹21,600</span>
+                    <span class="text-earth-600">💰 Fuel Cost Saved vs Petrol</span>
+                    <span class="text-green-600 font-bold">₹21,600</span>
                   </div>
-                  <div class="w-full bg-earth-950 rounded-full h-2">
-                    <div class="bg-leaf-500 h-2 rounded-full" style="width: 40%"></div>
+                  <div class="w-full bg-white rounded-full h-2">
+                    <div class="bg-green-700 h-2 rounded-full" style="width: 40%"></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- How It Works -->
-            <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6">
-              <h3 class="text-sm font-bold text-earth-50 mb-3">How Biogas Works</h3>
-              <div class="space-y-3 text-xs text-earth-50/60 leading-relaxed">
+            <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6">
+              <h3 class="text-sm font-bold text-earth-900 mb-3">How Biogas Works</h3>
+              <div class="space-y-3 text-xs text-earth-700 leading-relaxed">
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">1</span>
+                  <span class="text-green-600 font-bold text-lg">1</span>
                   <p>Food waste is collected from canteens and events — anything too spoiled for animals</p>
                 </div>
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">2</span>
-                  <p>It goes into an <strong class="text-earth-50">anaerobic digester</strong> — a sealed tank where bacteria break it down without oxygen</p>
+                  <span class="text-green-600 font-bold text-lg">2</span>
+                  <p>It goes into an <strong class="text-earth-900">anaerobic digester</strong> — a sealed tank where bacteria break it down without oxygen</p>
                 </div>
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">3</span>
-                  <p>The bacteria produce <strong class="text-earth-50">methane (CH₄)</strong> — the same gas in LPG cylinders</p>
+                  <span class="text-green-600 font-bold text-lg">3</span>
+                  <p>The bacteria produce <strong class="text-earth-900">methane (CH₄)</strong> — the same gas in LPG cylinders</p>
                 </div>
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">4</span>
-                  <p>Methane is <strong class="text-earth-50">purified and stored</strong> — removing CO₂ and impurities</p>
+                  <span class="text-green-600 font-bold text-lg">4</span>
+                  <p>Methane is <strong class="text-earth-900">purified and stored</strong> — removing CO₂ and impurities</p>
                 </div>
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">5</span>
-                  <p>Clean biomethane powers <strong class="text-earth-50">CNG vehicles, cooking stoves, and generators</strong> — zero fossil fuel needed</p>
+                  <span class="text-green-600 font-bold text-lg">5</span>
+                  <p>Clean biomethane powers <strong class="text-earth-900">CNG vehicles, cooking stoves, and generators</strong> — zero fossil fuel needed</p>
                 </div>
                 <div class="flex gap-3">
-                  <span class="text-leaf-400 font-bold text-lg">6</span>
-                  <p><strong class="text-earth-50">100 kg food waste = 150 km car travel</strong> — waste that would pollute landfills now runs your commute</p>
+                  <span class="text-green-600 font-bold text-lg">6</span>
+                  <p><strong class="text-earth-900">100 kg food waste = 150 km car travel</strong> — waste that would pollute landfills now runs your commute</p>
                 </div>
               </div>
             </div>
@@ -878,59 +975,59 @@
       <!-- TAB 5: JUDGE ADMIN PANEL -->
       <section id="tab-judge" class="tab-content hidden">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-lg font-display font-bold text-earth-50">
-            <i class="fa-solid fa-crown text-saffron-400 mr-2"></i>Judge Admin Panel
+          <h2 class="text-lg font-display font-bold text-earth-900">
+            <i class="fa-solid fa-crown text-orange-500 mr-2"></i>Judge Admin Panel
           </h2>
-          <span class="text-xs text-earth-50/40">Authorized judges only</span>
+          <span class="text-xs text-earth-500">Authorized judges only</span>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-leaf-400" id="judge-meals">0</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">🍽️ Meals to People</p>
+          <div class="bg-earth-100/70 border border-orange-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-green-600" id="judge-meals">0</p>
+            <p class="text-[10px] text-earth-600 mt-1">🍽️ Meals to People</p>
           </div>
-          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-saffron-400" id="judge-animals">0</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">🐾 Animals Fed</p>
+          <div class="bg-earth-100/70 border border-orange-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-orange-500" id="judge-animals">0</p>
+            <p class="text-[10px] text-earth-600 mt-1">🐾 Animals Fed</p>
           </div>
-          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-leaf-400" id="judge-biogas">0 L</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">⚡ Biogas Generated</p>
+          <div class="bg-earth-100/70 border border-orange-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-green-600" id="judge-biogas">0 L</p>
+            <p class="text-[10px] text-earth-600 mt-1">⚡ Biogas Generated</p>
           </div>
-          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
-            <p class="text-2xl font-black text-earth-50" id="judge-co2">0 kg</p>
-            <p class="text-[10px] text-earth-50/50 mt-1">🌍 CO₂ Offset</p>
+          <div class="bg-earth-100/70 border border-orange-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-earth-900" id="judge-co2">0 kg</p>
+            <p class="text-[10px] text-earth-600 mt-1">🌍 CO₂ Offset</p>
           </div>
         </div>
-        <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-5 mb-8">
-          <h3 class="text-sm font-bold text-earth-50 mb-3">🌊 Zero-Waste Cascade</h3>
+        <div class="bg-earth-100/70 border border-earth-300 rounded-2xl p-5 mb-8">
+          <h3 class="text-sm font-bold text-earth-900 mb-3">🌊 Zero-Waste Cascade</h3>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-leaf-500">
-              <p class="text-xs text-earth-50/50">🍽️ To People</p>
-              <p class="text-lg font-black text-leaf-400" id="judge-cascade-human">0 kg</p>
+            <div class="bg-white rounded-xl px-4 py-3 border-l-4 border-leaf-500">
+              <p class="text-xs text-earth-600">🍽️ To People</p>
+              <p class="text-lg font-black text-green-600" id="judge-cascade-human">0 kg</p>
             </div>
-            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-saffron-500">
-              <p class="text-xs text-earth-50/50">🐾 To Animals</p>
-              <p class="text-lg font-black text-saffron-400" id="judge-cascade-animal">0 kg</p>
+            <div class="bg-white rounded-xl px-4 py-3 border-l-4 border-saffron-500">
+              <p class="text-xs text-earth-600">🐾 To Animals</p>
+              <p class="text-lg font-black text-orange-500" id="judge-cascade-animal">0 kg</p>
             </div>
-            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-leaf-500">
-              <p class="text-xs text-earth-50/50">⚡ To Biogas</p>
-              <p class="text-lg font-black text-leaf-400" id="judge-cascade-biogas">0 kg</p>
+            <div class="bg-white rounded-xl px-4 py-3 border-l-4 border-leaf-500">
+              <p class="text-xs text-earth-600">⚡ To Biogas</p>
+              <p class="text-lg font-black text-green-600" id="judge-cascade-biogas">0 kg</p>
             </div>
-            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-earth-500">
-              <p class="text-xs text-earth-50/50">🚗 Car Distance</p>
-              <p class="text-lg font-black text-earth-50" id="judge-car">0 km</p>
+            <div class="bg-white rounded-xl px-4 py-3 border-l-4 border-earth-3000">
+              <p class="text-xs text-earth-600">🚗 Car Distance</p>
+              <p class="text-lg font-black text-earth-900" id="judge-car">0 km</p>
             </div>
           </div>
         </div>
-        <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-5">
+        <div class="bg-earth-100/70 border border-earth-300 rounded-2xl p-5">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-sm font-bold text-earth-50">📋 Activity Log</h3>
-            <button onclick="exportJudgeReport()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-leaf-500/10 text-leaf-400 border border-leaf-500/20 hover:bg-leaf-500/20">
+            <h3 class="text-sm font-bold text-earth-900">📋 Activity Log</h3>
+            <button onclick="exportJudgeReport()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-600 border border-green-500/20 hover:bg-green-200">
               <i class="fa-solid fa-download mr-1"></i> Export Report
             </button>
           </div>
           <div id="activity-log" class="space-y-2 max-h-96 overflow-y-auto">
-            <p class="text-xs text-earth-50/30 text-center py-8">No activity yet. Start claiming food!</p>
+            <p class="text-xs text-earth-400 text-center py-8">No activity yet. Start claiming food!</p>
           </div>
         </div>
       </section>
@@ -938,15 +1035,15 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-earth-800/60 py-6 mt-8">
+    <footer class="border-t border-earth-300/60 py-6 mt-8">
       <div class="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-full bg-leaf-500 flex items-center justify-center">
-            <i class="fa-solid fa-leaf text-[10px] text-earth-50"></i>
+          <div class="w-6 h-6 rounded-full bg-green-700 flex items-center justify-center">
+            <i class="fa-solid fa-leaf text-[10px] text-earth-900"></i>
           </div>
-          <span class="text-xs text-earth-50/40">EcoShare — Surplus to Sustain</span>
+          <span class="text-xs text-earth-500">EcoShare — Surplus to Sustain</span>
         </div>
-        <p class="text-[10px] text-earth-50/30">Built for FusioniX '26 Hackathon | Sustainability Track</p>
+        <p class="text-[10px] text-earth-400">Built for FusioniX '26 Hackathon | Sustainability Track</p>
       </div>
     </footer>
   </div>
@@ -1114,8 +1211,8 @@
       // Update dots
       for (let i = 1; i <= totalActs; i++) {
         document.getElementById(`dot-${i}`).className = i === actNum
-          ? "w-8 h-2 rounded-full bg-leaf-500 transition-all"
-          : "w-2 h-2 rounded-full bg-earth-800 transition-all";
+          ? "w-8 h-2 rounded-full bg-green-700 transition-all"
+          : "w-2 h-2 rounded-full bg-earth-200 transition-all";
       }
 
       currentAct = actNum;
@@ -1746,28 +1843,28 @@ const storyAnimations = {
       document.getElementById('stat-active').textContent = active.length;
 
       if (active.length === 0) {
-        grid.innerHTML = '<div class="col-span-3 text-center py-12"><p class="text-earth-50/40 text-sm mb-2">No active batches</p><p class="text-[11px] text-earth-50/30">Post surplus food to get started!</p></div>';
+        grid.innerHTML = '<div class="col-span-3 text-center py-12"><p class="text-earth-500 text-sm mb-2">No active batches</p><p class="text-[11px] text-earth-400">Post surplus food to get started!</p></div>';
         return;
       }
 
       active.forEach(item => {
         grid.innerHTML += `
-          <div class="bg-earth-900 border border-earth-800/80 rounded-2xl p-5 hover:border-earth-700 transition-all flex flex-col justify-between">
+          <div class="bg-earth-50 border border-earth-300/80 rounded-2xl p-5 hover:border-earth-400 transition-all flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-mono bg-leaf-500/10 text-leaf-400 px-2.5 py-1 rounded-full border border-leaf-500/20">Surplus Batch</span>
-                <span class="text-xs text-earth-50/40"><i class="fa-regular fa-clock"></i> <30m left</span>
+                <span class="text-[10px] font-mono bg-green-100 text-green-600 px-2.5 py-1 rounded-full border border-green-500/20">Surplus Batch</span>
+                <span class="text-xs text-earth-500"><i class="fa-regular fa-clock"></i> <30m left</span>
               </div>
-              <h3 class="font-bold text-earth-50 text-base mb-2">${item.title}</h3>
-              <p class="text-xs text-earth-50/50 mb-1"><i class="fa-solid fa-location-dot text-leaf-400 mr-1"></i> ${item.location}</p>
-              <p class="text-xs text-earth-50/50 mb-1"><i class="fa-solid fa-utensils text-leaf-400 mr-1"></i> ${item.quantity} Portions</p>
-              <p class="text-[10px] text-earth-50/30 mb-4">Donor: ${item.donor}</p>
+              <h3 class="font-bold text-earth-900 text-base mb-2">${item.title}</h3>
+              <p class="text-xs text-earth-600 mb-1"><i class="fa-solid fa-location-dot text-green-600 mr-1"></i> ${item.location}</p>
+              <p class="text-xs text-earth-600 mb-1"><i class="fa-solid fa-utensils text-green-600 mr-1"></i> ${item.quantity} Portions</p>
+              <p class="text-[10px] text-earth-400 mb-4">Donor: ${item.donor}</p>
             </div>
             <div class="flex gap-2">
-              <button onclick="claimFood(${item.id})" class="flex-1 bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-xs">
+              <button onclick="claimFood(${item.id})" class="flex-1 bg-green-700 hover:bg-green-600 text-earth-900 font-bold py-2.5 rounded-xl transition-all text-xs">
                 🍽️ Claim for Humans
               </button>
-              ${item.animalSafe ? `<button onclick="routeToAnimal(${item.id})" class="px-3 py-2.5 rounded-xl bg-saffron-500/20 text-saffron-400 text-xs font-bold hover:bg-saffron-500/30 transition-all" title="Route to animals">🐾</button>` : ''}
+              ${item.animalSafe ? `<button onclick="routeToAnimal(${item.id})" class="px-3 py-2.5 rounded-xl bg-orange-100 text-orange-500 text-xs font-bold hover:bg-orange-200 transition-all" title="Route to animals">🐾</button>` : ''}
             </div>
           </div>
         `;
@@ -1780,24 +1877,24 @@ const storyAnimations = {
       const active = state.animalListings.filter(i => !i.claimed);
 
       if (active.length === 0) {
-        grid.innerHTML = '<div class="col-span-3 text-center py-12"><p class="text-earth-50/40 text-sm">All animal batches delivered! 🐾</p></div>';
+        grid.innerHTML = '<div class="col-span-3 text-center py-12"><p class="text-earth-500 text-sm">All animal batches delivered! 🐾</p></div>';
         return;
       }
 
       active.forEach(item => {
         grid.innerHTML += `
-          <div class="bg-earth-900 border border-saffron-500/20 rounded-2xl p-5 hover:border-saffron-500/40 transition-all flex flex-col justify-between">
+          <div class="bg-earth-50 border border-orange-500/20 rounded-2xl p-5 hover:border-orange-500/40 transition-all flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-mono bg-saffron-500/10 text-saffron-400 px-2.5 py-1 rounded-full border border-saffron-500/20">🐾 Animal-Safe</span>
-                <span class="text-xs text-earth-50/40"><i class="fa-solid fa-truck"></i> Ready</span>
+                <span class="text-[10px] font-mono bg-orange-100 text-orange-500 px-2.5 py-1 rounded-full border border-orange-500/20">🐾 Animal-Safe</span>
+                <span class="text-xs text-earth-500"><i class="fa-solid fa-truck"></i> Ready</span>
               </div>
-              <h3 class="font-bold text-earth-50 text-base mb-2">${item.title}</h3>
-              <p class="text-xs text-earth-50/50 mb-1"><i class="fa-solid fa-location-dot text-saffron-400 mr-1"></i> ${item.location}</p>
-              <p class="text-xs text-earth-50/50 mb-1"><i class="fa-solid fa-weight-hanging text-saffron-400 mr-1"></i> ${item.quantity} kg</p>
-              <p class="text-xs text-earth-50/50 mb-4"><i class="fa-solid fa-building-columns text-saffron-400 mr-1"></i> → ${item.shelter}</p>
+              <h3 class="font-bold text-earth-900 text-base mb-2">${item.title}</h3>
+              <p class="text-xs text-earth-600 mb-1"><i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> ${item.location}</p>
+              <p class="text-xs text-earth-600 mb-1"><i class="fa-solid fa-weight-hanging text-orange-500 mr-1"></i> ${item.quantity} kg</p>
+              <p class="text-xs text-earth-600 mb-4"><i class="fa-solid fa-building-columns text-orange-500 mr-1"></i> → ${item.shelter}</p>
             </div>
-            <button onclick="deliverToAnimal(${item.id})" class="w-full bg-saffron-500 hover:bg-saffron-400 text-earth-950 font-bold py-2.5 rounded-xl transition-all text-xs">
+            <button onclick="deliverToAnimal(${item.id})" class="w-full bg-orange-500 hover:bg-orange-400 text-earth-950 font-bold py-2.5 rounded-xl transition-all text-xs">
               <i class="fa-solid fa-paw mr-1"></i> Mark Delivered
             </button>
           </div>
@@ -1920,14 +2017,14 @@ const storyAnimations = {
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-leaf-500', 'text-earth-50');
-        btn.classList.add('text-earth-50/60');
+        btn.classList.remove('bg-green-700', 'text-earth-50');
+        btn.classList.add('text-earth-700');
       });
 
       const activeBtn = document.getElementById(`nav-${tab}`);
       if (activeBtn) {
-        activeBtn.classList.add('bg-leaf-500', 'text-earth-50');
-        activeBtn.classList.remove('text-earth-50/60');
+        activeBtn.classList.add('bg-green-700', 'text-earth-50');
+        activeBtn.classList.remove('text-earth-700');
       }
     }
 
@@ -1953,19 +2050,19 @@ const storyAnimations = {
       if (!el) return;
       const logs = state.activityLog || [];
       if (logs.length === 0) {
-        el.innerHTML = '<p class="text-xs text-earth-50/30 text-center py-8">No activity yet. Start claiming food!</p>';
+        el.innerHTML = '<p class="text-xs text-earth-400 text-center py-8">No activity yet. Start claiming food!</p>';
         return;
       }
       el.innerHTML = logs.map(log => `
-        <div class="bg-earth-950 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3 border border-earth-800/50">
+        <div class="bg-white rounded-xl px-4 py-2.5 flex items-center justify-between gap-3 border border-earth-300/50">
           <div class="flex items-center gap-3 min-w-0">
             <span class="text-sm shrink-0">${log.action.split(' ')[0]}</span>
             <div class="min-w-0">
-              <p class="text-xs text-earth-50 truncate">${log.details}</p>
-              <p class="text-[10px] text-earth-50/30">by ${log.user}</p>
+              <p class="text-xs text-earth-900 truncate">${log.details}</p>
+              <p class="text-[10px] text-earth-400">by ${log.user}</p>
             </div>
           </div>
-          <span class="text-[10px] text-earth-50/30 shrink-0 whitespace-nowrap">${log.time}</span>
+          <span class="text-[10px] text-earth-400 shrink-0 whitespace-nowrap">${log.time}</span>
         </div>
       `).join('');
     }
