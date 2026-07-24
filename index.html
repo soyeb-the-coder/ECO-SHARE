@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EcoShare | Surplus to Sustain</title>
+  <title>EcoShare v3 | Surplus to Sustain</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Firebase SDK -->
@@ -1097,21 +1097,6 @@
       renderAll();
     }
 
-    // ==================== ACTIVITY LOG ====================
-    // activityLog is initialized inside the state declaration below
-
-    function addActivity(action, details, qty) {
-      state.activityLog.unshift({
-        time: new Date().toLocaleString(),
-        user: currentUser?.name || 'Anonymous',
-        action: action,
-        details: details,
-        quantity: qty || 0
-      });
-      if (state.activityLog.length > 100) state.activityLog.length = 100;
-      persist();
-    }
-
     // ==================== STORY LOGIC ====================
     let currentAct = 1;
     const totalActs = 5;
@@ -1155,6 +1140,19 @@
     });
     if (!state.activityLog) state.activityLog = [];
     function persist() { saveState('state', state); }
+
+    function addActivity(action, details, qty) {
+      if (!state || !state.activityLog) return;
+      state.activityLog.unshift({
+        time: new Date().toLocaleString(),
+        user: currentUser?.name || 'Anonymous',
+        action: action,
+        details: details,
+        quantity: qty || 0
+      });
+      if (state.activityLog.length > 100) state.activityLog.length = 100;
+      persist();
+    }
 
     // Seed demo data on first visit
     if (state.foodListings.length === 0) {
