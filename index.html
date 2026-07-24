@@ -61,11 +61,11 @@
     .font-hand { font-family: 'Caveat', cursive; }
 
     body {
-      background: #FDF0D5;
+      background: #E8D5A8;
       background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(45, 106, 79, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(193, 18, 31, 0.03) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(45, 106, 79, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(193, 18, 31, 0.06) 0%, transparent 50%);
     }
 
     /* Paper texture overlay */
@@ -216,7 +216,7 @@
   <video id="bg-video" autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover pointer-events-none" style="z-index: -10; opacity: 0;">
     <source src="https://cdn.pixabay.com/video/2020/08/08/46647-449284699_large.mp4" type="video/mp4">
   </video>
-  <div class="fixed inset-0 bg-white/60 pointer-events-none" style="z-index: -5;"></div>
+  <div class="fixed inset-0 bg-earth-200/40 pointer-events-none" style="z-index: -5;"></div>
   <style>
     #bg-video { opacity: 0; transition: opacity 1.5s ease-in; }
     #bg-video.loaded { opacity: 0.35; }
