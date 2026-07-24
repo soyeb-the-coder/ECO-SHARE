@@ -17,31 +17,31 @@
       theme: {
         extend: {
           colors: {
-            // Indian Folk / Desi palette (maps over old earth/leaf/saffron names)
+            // INDIAN FOLK — BOLD and VIBRANT
             earth: {
-              50: '#FDF0D5',  // cream paper
-              100: '#F5E6C8', // slightly darker cream
-              200: '#E8D5A8', // warm tan
-              300: '#D4B87A', // border tan
-              400: '#C49A5C', // medium tan
-              500: '#B8860B', // golden
-              600: '#8B6914', // dark gold
-              700: '#6B4F12', // darker
-              800: '#4A3510', // text dark
-              900: '#3E1F0A', // text darkest
-              950: '#2A1508', // almost black
+              50: '#FFF8F0',  // cream white cards
+              100: '#FFF3E0', // warm white
+              200: '#FFE0B2', // light orange cream
+              300: '#FFCC80', // golden
+              400: '#FFB74D', // bright gold
+              500: '#FF8F00', // saffron
+              600: '#E65100', // deep orange
+              700: '#BF360C', // dark orange
+              800: '#6D4C41', // brown text
+              900: '#3E2723', // dark brown
+              950: '#212121', // near black
             },
             leaf: {
-              400: '#40916C',
-              500: '#2D6A4F',
+              400: '#66BB6A',
+              500: '#2E7D32',
               600: '#1B5E20',
               700: '#0D3B0F',
             },
             saffron: {
-              200: '#FFD699',
-              400: '#FF8C42',
+              200: '#FFCC80',
+              400: '#FF8F00',
               500: '#FF6B35',
-              600: '#E55A2B',
+              600: '#E65100',
             }
           }
         }
@@ -61,120 +61,101 @@
     .font-hand { font-family: 'Caveat', cursive; }
 
     body {
-      background: #E8D5A8;
+      background: #FFF3E0;
       background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(45, 106, 79, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(193, 18, 31, 0.06) 0%, transparent 50%);
+        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,107,53,0.03) 35px, rgba(255,107,53,0.03) 36px),
+        repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(45,106,79,0.03) 35px, rgba(45,106,79,0.03) 36px);
     }
 
-    /* Paper texture overlay */
-    .paper-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.06;
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 2px),
-        radial-gradient(ellipse at 30% 50%, rgba(139, 105, 20, 0.05) 0%, transparent 50%);
-    }
-
-    /* Indian folk border pattern */
+    /* Indian folk border pattern — bold double border */
     .folk-border {
-      border: 2px solid #3E1F0A;
-      outline: 1px solid #FFC300;
+      border: 3px solid #C1121F;
+      outline: 2px solid #FFC300;
       outline-offset: 3px;
-      box-shadow: 4px 4px 0 #3E1F0A;
-    }
-    .folk-border-light {
-      border: 2px solid #D4B87A;
-      outline: 1px solid #FFC300;
-      outline-offset: 2px;
+      box-shadow: 5px 5px 0 rgba(193,18,31,0.15);
     }
 
-    /* Stamp effect */
+    /* Stamp seal effect — like Indian govt stamp */
     .stamp {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 3px 10px;
       background: transparent;
       color: #C1121F;
-      border: 2px solid #C1121F;
-      border-radius: 0;
+      border: 3px double #C1121F;
+      border-radius: 50%;
       font-family: 'Caveat', cursive;
       font-weight: 700;
-      font-size: 12px;
-      transform: rotate(-2deg);
+      font-size: 10px;
       text-transform: uppercase;
-      box-shadow: 0 0 0 2px transparent;
-      opacity: 0.85;
-    }
-
-    /* Hand-drawn button style */
-    .btn-folk {
-      background: #FF6B35;
-      color: #FDF0D5;
-      border: 2px solid #3E1F0A;
-      box-shadow: 3px 3px 0 #3E1F0A;
-      transition: all 0.15s ease;
-      font-weight: 700;
-    }
-    .btn-folk:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 5px 5px 0 #3E1F0A;
-    }
-    .btn-folk:active {
-      transform: translate(2px, 2px);
-      box-shadow: 1px 1px 0 #3E1F0A;
-    }
-    .btn-folk-green {
-      background: #2D6A4F;
-      color: #FDF0D5;
-      border: 2px solid #3E1F0A;
-      box-shadow: 3px 3px 0 #3E1F0A;
-      transition: all 0.15s ease;
-    }
-    .btn-folk-green:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 5px 5px 0 #3E1F0A;
-    }
-    .btn-folk-green:active {
-      transform: translate(2px, 2px);
-      box-shadow: 1px 1px 0 #3E1F0A;
-    }
-
-    /* Card style */
-    .card-folk {
-      background: #FDF0D5;
-      border: 2px solid #D4B87A;
-      box-shadow: 4px 4px 0 #D4B87A;
-    }
-    .card-folk-accent {
-      background: #FDF0D5;
-      border: 2px solid #FF6B35;
-      border-left: 6px solid #FF6B35;
-      box-shadow: 4px 4px 0 rgba(255, 107, 53, 0.2);
-    }
-
-    /* Signboard header style */
-    .signboard {
-      background: #3E1F0A;
-      color: #FFC300;
-      border: 3px solid #FF6B35;
-      box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
-      padding: 8px 20px;
-      display: inline-block;
-      font-family: 'Noto Sans Devanagari', sans-serif;
-      font-weight: 700;
+      transform: rotate(-8deg);
       letter-spacing: 1px;
     }
 
-    /* Hand-drawn line separator */
+    /* Hand-painted signboard button */
+    .btn-folk {
+      background: #FF6B35;
+      color: #FFF3E0;
+      border: 3px solid #C1121F;
+      box-shadow: 4px 4px 0 #C1121F;
+      transition: all 0.12s ease;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-folk:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #C1121F;
+      background: #E55A2B;
+    }
+    .btn-folk:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 #C1121F;
+    }
+    .btn-folk-green {
+      background: #2D6A4F;
+      color: #FFF3E0;
+      border: 3px solid #1B4332;
+      box-shadow: 4px 4px 0 #1B4332;
+      transition: all 0.12s ease;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .btn-folk-green:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #1B4332;
+    }
+    .btn-folk-green:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 #1B4332;
+    }
+
+    /* Card — like painted wooden board */
+    .card-folk {
+      background: #FFF8F0;
+      border: 3px solid #FF6B35;
+      box-shadow: 5px 5px 0 rgba(193,18,31,0.12);
+    }
+
+    /* Signboard — like village shop header */
+    .signboard {
+      background: #C1121F;
+      color: #FFC300;
+      border: 4px solid #FFC300;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+      padding: 10px 24px;
+      display: inline-block;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-size: 1.1em;
+    }
+
+    /* Hand-painted divider */
     .folk-divider {
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #FF6B35, #FFC300, #2D6A4F, transparent);
+      height: 4px;
+      background: repeating-linear-gradient(90deg, #C1121F 0px, #C1121F 10px, #FFC300 10px, #FFC300 20px, #2D6A4F 20px, #2D6A4F 30px);
       border: none;
-      opacity: 0.4;
+      opacity: 0.6;
     }
 
     @keyframes pulseGlow {
@@ -243,10 +224,10 @@
     <!-- Top Navigation -->
     <header class="flex justify-between items-center py-4">
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-green-700 animate-ping"></span>
-        <span class="text-xs font-mono tracking-widest text-green-600 uppercase font-bold">EcoShare Narrative</span>
+        <div class="w-3 h-3 rounded-full bg-red-600 animate-ping"></div>
+        <span class="signboard text-[10px] md:text-xs py-1 px-3" style="font-size:10px;"> EcoShare कहानी </span>
       </div>
-      <button onclick="skipToPlatform()" class="text-xs font-semibold text-earth-700 hover:text-earth-900 border border-earth-300 hover:border-orange-500/50 bg-earth-100/90 px-4 py-2 rounded-full transition-all backdrop-blur-md">
+      <button onclick="skipToPlatform()" class="btn-folk text-xs py-2 px-4 rounded-none">
         Skip to Platform <i class="fa-solid fa-arrow-right ml-1"></i>
       </button>
     </header>
@@ -486,7 +467,7 @@
   <!-- LOGIN MODAL OVERLAY                        -->
   <!-- ========================================== -->
   <div id="login-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-    <div class="bg-earth-50 border border-earth-300 rounded-2xl p-6 md:p-8 max-w-md w-full mx-4" onclick="event.stopPropagation()">
+    <div class="bg-orange-50 border-4 border-red-700 p-6 md:p-8 max-w-md w-full mx-4" style="box-shadow:8px 8px 0 rgba(193,18,31,0.2)" onclick="event.stopPropagation()">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-display font-bold text-earth-900">Sign in to EcoShare</h2>
         <button onclick="closeLoginModal()" class="text-earth-500 hover:text-earth-900 text-xl">&times;</button>
@@ -537,17 +518,17 @@
   <div id="platform-container" class="hidden min-h-screen flex flex-col relative z-20">
 
     <!-- Top Header -->
-    <header class="border-b border-earth-300/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+    <header class="border-b-4 border-saffron-600 bg-red-700 sticky top-0 z-50">
       <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="replayStory()">
           <div class="w-8 h-8 rounded-full bg-green-700 text-earth-900 flex items-center justify-center font-bold">
             <i class="fa-solid fa-leaf text-sm"></i>
           </div>
-          <span class="text-lg font-display font-black tracking-tight text-earth-900">EcoShare<span class="text-green-600">.</span></span>
+          <span class="text-lg font-black tracking-tight text-yellow-400" style="font-family:'Noto Sans Devanagari',sans-serif;"> EcoShare <span class="text-white">एकोशेयर</span></span>
         </div>
 
         <nav class="flex items-center space-x-1 md:space-x-2 overflow-x-auto">
-          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold bg-green-700 text-earth-900 whitespace-nowrap">
+          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold bg-yellow-500 text-red-900 whitespace-undo-bold border-2 border-yellow-300">
             <i class="fa-solid fa-bowl-food mr-1 hidden md:inline"></i> Food Feed
           </button>
           <button onclick="switchTab('list')" id="nav-list" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
