@@ -110,6 +110,29 @@
   <!-- Rangoli Pattern Background -->
   <div class="rangoli-bg"></div>
 
+  <!-- VIDEO BACKGROUND (Home Page) -->
+  <!-- Replace this URL with your actual video link -->
+  <video id="bg-video" autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover pointer-events-none" style="z-index: -10; opacity: 0;">
+    <source src="https://videos.pexels.com/video-files/857251/857251-hd_1280_720_30fps.mp4" type="video/mp4">
+  </video>
+  <div class="fixed inset-0 bg-earth-950/60 pointer-events-none" style="z-index: -5;"></div>
+
+  <!-- Fallback if video doesn't load -->
+  <style>
+    #bg-video { opacity: 0; transition: opacity 1.5s ease-in; }
+    #bg-video.loaded { opacity: 0.35; }
+  </style>
+  <script>
+    window.addEventListener('load', () => {
+      const v = document.getElementById('bg-video');
+      if (v) {
+        v.play().then(() => v.classList.add('loaded')).catch(() => v.classList.add('loaded'));
+        v.addEventListener('loadeddata', () => v.classList.add('loaded'));
+        v.addEventListener('error', () => v.style.display = 'none');
+      }
+    });
+  </script>
+
   <!-- ========================================== -->
   <!-- STORY NARRATIVE OVERLAY (STORY MODE)      -->
   <!-- ========================================== -->
