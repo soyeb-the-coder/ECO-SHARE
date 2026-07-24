@@ -47,6 +47,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- GSAP Animation Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 
@@ -357,6 +358,55 @@
   </div>
 
   <!-- ========================================== -->
+  <!-- LOGIN MODAL OVERLAY                        -->
+  <!-- ========================================== -->
+  <div id="login-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div class="bg-earth-900 border border-earth-800 rounded-2xl p-6 md:p-8 max-w-md w-full mx-4" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-display font-bold text-earth-50">Sign in to EcoShare</h2>
+        <button onclick="closeLoginModal()" class="text-earth-50/40 hover:text-earth-50 text-xl">&times;</button>
+      </div>
+
+      <!-- Google Sign-In -->
+      <button onclick="loginWithGoogle()" class="w-full bg-white hover:bg-earth-100 text-earth-900 font-semibold py-3 rounded-xl transition-all text-sm flex items-center justify-center gap-3 mb-4">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="flex-1 h-px bg-earth-800"></div>
+        <span class="text-xs text-earth-50/40">or</span>
+        <div class="flex-1 h-px bg-earth-800"></div>
+      </div>
+
+      <!-- Email/Password -->
+      <form onsubmit="loginWithEmail(event)" class="space-y-3">
+        <input type="email" id="auth-email" placeholder="Email address" required
+          class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/30">
+        <input type="password" id="auth-password" placeholder="Password (min 6 chars)" minlength="6" required
+          class="w-full px-4 py-2.5 rounded-xl bg-earth-950 border border-earth-800 text-sm text-earth-50 focus:outline-none focus:border-leaf-500 placeholder:text-earth-50/30">
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 bg-leaf-500 hover:bg-leaf-400 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-sm">
+            Sign In
+          </button>
+          <button type="button" onclick="signUpEmail()" class="flex-1 bg-earth-800 hover:bg-earth-700 text-earth-50 font-bold py-2.5 rounded-xl transition-all text-sm">
+            Sign Up
+          </button>
+        </div>
+      </form>
+
+      <p id="auth-error" class="text-xs text-red-400 mt-3 hidden"></p>
+
+      <div class="mt-5 pt-4 border-t border-earth-800/60">
+        <button onclick="demoLogin()" class="w-full bg-saffron-500 hover:bg-saffron-400 text-earth-950 font-bold py-2.5 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-flask"></i> Demo Login (Judge)
+        </button>
+        <p class="text-[10px] text-earth-50/30 text-center mt-2">For demo purposes — works immediately</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
   <!-- MAIN ECOSHARE PLATFORM DASHBOARD           -->
   <!-- ========================================== -->
   <div id="platform-container" class="hidden min-h-screen flex flex-col relative z-20">
@@ -384,9 +434,24 @@
           <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-earth-50 whitespace-nowrap">
             <i class="fa-solid fa-bolt mr-1 hidden md:inline"></i> Biogas
           </button>
+          <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-50/60 hover:text-saffron-400 whitespace-nowrap hidden">
+            <i class="fa-solid fa-crown mr-1 hidden md:inline"></i> Judge Panel
+          </button>
           <button onclick="replayStory()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-earth-50/40 hover:text-saffron-400 border border-earth-800 whitespace-nowrap hidden md:block">
             <i class="fa-solid fa-play text-[10px] mr-1"></i> Story
           </button>
+          <div id="auth-header" class="flex items-center">
+            <button id="btn-login" onclick="showLoginModal()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-leaf-500/20 text-leaf-400 border border-leaf-500/30 hover:bg-leaf-500/30 whitespace-nowrap">
+              <i class="fa-solid fa-user mr-1"></i> Login
+            </button>
+            <div id="btn-user" class="hidden items-center gap-2">
+              <span id="user-name" class="text-xs text-earth-50/80 whitespace-nowrap hidden md:inline"></span>
+              <span class="text-[10px] bg-saffron-500/20 text-saffron-400 px-2 py-0.5 rounded-full border border-saffron-500/30 whitespace-nowrap">👑 Judge</span>
+              <button onclick="logoutUser()" class="px-2 py-1.5 rounded-full text-xs text-earth-50/40 hover:text-red-400 whitespace-nowrap" title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -782,6 +847,66 @@
         </div>
       </section>
 
+      <!-- TAB 5: JUDGE ADMIN PANEL -->
+      <section id="tab-judge" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-display font-bold text-earth-50">
+            <i class="fa-solid fa-crown text-saffron-400 mr-2"></i>Judge Admin Panel
+          </h2>
+          <span class="text-xs text-earth-50/40">Authorized judges only</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-leaf-400" id="judge-meals">0</p>
+            <p class="text-[10px] text-earth-50/50 mt-1">🍽️ Meals to People</p>
+          </div>
+          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-saffron-400" id="judge-animals">0</p>
+            <p class="text-[10px] text-earth-50/50 mt-1">🐾 Animals Fed</p>
+          </div>
+          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-leaf-400" id="judge-biogas">0 L</p>
+            <p class="text-[10px] text-earth-50/50 mt-1">⚡ Biogas Generated</p>
+          </div>
+          <div class="bg-earth-900/60 border border-saffron-500/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-black text-earth-50" id="judge-co2">0 kg</p>
+            <p class="text-[10px] text-earth-50/50 mt-1">🌍 CO₂ Offset</p>
+          </div>
+        </div>
+        <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-5 mb-8">
+          <h3 class="text-sm font-bold text-earth-50 mb-3">🌊 Zero-Waste Cascade</h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-leaf-500">
+              <p class="text-xs text-earth-50/50">🍽️ To People</p>
+              <p class="text-lg font-black text-leaf-400" id="judge-cascade-human">0 kg</p>
+            </div>
+            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-saffron-500">
+              <p class="text-xs text-earth-50/50">🐾 To Animals</p>
+              <p class="text-lg font-black text-saffron-400" id="judge-cascade-animal">0 kg</p>
+            </div>
+            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-leaf-500">
+              <p class="text-xs text-earth-50/50">⚡ To Biogas</p>
+              <p class="text-lg font-black text-leaf-400" id="judge-cascade-biogas">0 kg</p>
+            </div>
+            <div class="bg-earth-950 rounded-xl px-4 py-3 border-l-4 border-earth-500">
+              <p class="text-xs text-earth-50/50">🚗 Car Distance</p>
+              <p class="text-lg font-black text-earth-50" id="judge-car">0 km</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-earth-900/60 border border-earth-800 rounded-2xl p-5">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-bold text-earth-50">📋 Activity Log</h3>
+            <button onclick="exportJudgeReport()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-leaf-500/10 text-leaf-400 border border-leaf-500/20 hover:bg-leaf-500/20">
+              <i class="fa-solid fa-download mr-1"></i> Export Report
+            </button>
+          </div>
+          <div id="activity-log" class="space-y-2 max-h-96 overflow-y-auto">
+            <p class="text-xs text-earth-50/30 text-center py-8">No activity yet. Start claiming food!</p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- Footer -->
@@ -828,6 +953,141 @@
     }
     function saveState(key, val) {
       try { localStorage.setItem('ecoshare_'+key, JSON.stringify(val)); } catch(e){}
+    }
+
+    // ==================== AUTH STATE ====================
+    let currentUser = loadState('authUser', null); // {name, email, isJudge, isDemo}
+
+    function isLoggedIn() { return !!currentUser; }
+
+    function updateAuthUI() {
+      const loginBtn = document.getElementById('btn-login');
+      const userDiv = document.getElementById('btn-user');
+      const userName = document.getElementById('user-name');
+      const judgeNav = document.getElementById('nav-judge');
+      if (!loginBtn) return;
+      if (isLoggedIn()) {
+        loginBtn.classList.add('hidden');
+        userDiv.classList.remove('hidden');
+        userName.textContent = currentUser.name;
+        if (judgeNav) judgeNav.classList.remove('hidden');
+      } else {
+        loginBtn.classList.remove('hidden');
+        userDiv.classList.add('hidden');
+        if (judgeNav) judgeNav.classList.add('hidden');
+        // if judge tab open, switch to browse
+        const judgeTab = document.getElementById('tab-judge');
+        if (judgeTab && !judgeTab.classList.contains('hidden')) switchTab('browse');
+      }
+    }
+
+    // ==================== AUTH FUNCTIONS ====================
+    function showLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+    }
+    document.getElementById('login-modal')?.addEventListener('click', closeLoginModal);
+
+    // --- Demo Login (instant, no Firebase needed) ---
+    function demoLogin() {
+      currentUser = { name: 'Judge (Demo)', email: 'judge@demo.com', isJudge: true, isDemo: true };
+      saveState('authUser', currentUser);
+      closeLoginModal();
+      updateAuthUI();
+      renderAll();
+    }
+
+    // --- Google Login (Firebase required) ---
+    function loginWithGoogle() {
+      if (!USE_FIREBASE || typeof firebase === 'undefined' || !firebase.auth) {
+        document.getElementById('auth-error').textContent = '⚠️ Firebase not configured. Use Demo Login instead.';
+        document.getElementById('auth-error').classList.remove('hidden');
+        return;
+      }
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(result => {
+        const user = result.user;
+        currentUser = { name: user.displayName || user.email, email: user.email, isJudge: true, isDemo: false };
+        saveState('authUser', currentUser);
+        closeLoginModal();
+        updateAuthUI();
+        renderAll();
+      }).catch(err => {
+        document.getElementById('auth-error').textContent = err.message;
+        document.getElementById('auth-error').classList.remove('hidden');
+      });
+    }
+
+    // --- Email/Password Login (Firebase required) ---
+    function loginWithEmail(e) {
+      e.preventDefault();
+      if (!USE_FIREBASE || typeof firebase === 'undefined' || !firebase.auth) {
+        document.getElementById('auth-error').textContent = '⚠️ Firebase not configured. Use Demo Login instead.';
+        document.getElementById('auth-error').classList.remove('hidden');
+        return;
+      }
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      firebase.auth().signInWithEmailAndPassword(email, pass).then(result => {
+        const user = result.user;
+        currentUser = { name: user.email, email: user.email, isJudge: true, isDemo: false };
+        saveState('authUser', currentUser);
+        closeLoginModal();
+        updateAuthUI();
+        renderAll();
+      }).catch(err => {
+        document.getElementById('auth-error').textContent = err.message;
+        document.getElementById('auth-error').classList.remove('hidden');
+      });
+    }
+
+    function signUpEmail() {
+      if (!USE_FIREBASE || typeof firebase === 'undefined' || !firebase.auth) {
+        document.getElementById('auth-error').textContent = '⚠️ Firebase not configured. Use Demo Login instead.';
+        document.getElementById('auth-error').classList.remove('hidden');
+        return;
+      }
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      firebase.auth().createUserWithEmailAndPassword(email, pass).then(result => {
+        const user = result.user;
+        currentUser = { name: user.email, email: user.email, isJudge: true, isDemo: false };
+        saveState('authUser', currentUser);
+        closeLoginModal();
+        updateAuthUI();
+        renderAll();
+      }).catch(err => {
+        document.getElementById('auth-error').textContent = err.message;
+        document.getElementById('auth-error').classList.remove('hidden');
+      });
+    }
+
+    function logoutUser() {
+      if (!currentUser?.isDemo && USE_FIREBASE && typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(() => {});
+      }
+      currentUser = null;
+      saveState('authUser', null);
+      updateAuthUI();
+      renderAll();
+    }
+
+    // ==================== ACTIVITY LOG ====================
+    state.activityLog = state.activityLog || [];
+
+    function addActivity(action, details, qty) {
+      state.activityLog.unshift({
+        time: new Date().toLocaleString(),
+        user: currentUser?.name || 'Anonymous',
+        action: action,
+        details: details,
+        quantity: qty || 0
+      });
+      if (state.activityLog.length > 100) state.activityLog.length = 100;
+      persist();
     }
 
     // ==================== STORY LOGIC ====================
@@ -892,6 +1152,8 @@
       renderAnimalListings();
       updateStats();
       updateCascade();
+      updateJudgePanel();
+      updateActivityLog();
     }
 
     // ==================== RENDER FUNCTIONS ====================
@@ -969,6 +1231,7 @@
       state.mealsSaved += item.quantity;
       state.totalDiverted += item.quantity * 2;
       state.co2Saved = Math.round(state.totalDiverted * 1.25);
+      addActivity('🍽️ Claimed for Humans', item.title + ' — ' + item.quantity + ' portions', item.quantity);
       persist();
       renderAll();
     }
@@ -981,6 +1244,7 @@
       state.animalListings.unshift({ id: Date.now(), title: item.title + " (Routed)", location: item.location, quantity: w, donor: item.donor, claimed: false, shelter: "Stray Friends Society" });
       state.totalDiverted += w;
       state.co2Saved = Math.round(state.totalDiverted * 1.25);
+      addActivity('🐾 Routed to Animals', item.title + ' — ' + w + ' kg', w);
       persist();
       renderAll();
     }
@@ -994,6 +1258,7 @@
       state.biogasLiters += Math.round(bioKg * 0.6 * 1000);
       state.totalDiverted += item.quantity;
       state.co2Saved = Math.round(state.totalDiverted * 1.25);
+      addActivity('🐾 Delivered to ' + item.shelter, item.title + ' — ' + item.quantity + ' kg', item.quantity);
       persist();
       renderAll();
     }
@@ -1002,9 +1267,10 @@
       e.preventDefault();
       const isAnimal = document.getElementById('input-animal-safe').checked;
       const qty = parseInt(document.getElementById('input-quantity').value);
+      const title = document.getElementById('input-title').value;
       const item = {
         id: Date.now(),
-        title: document.getElementById('input-title').value,
+        title: title,
         location: document.getElementById('input-location').value,
         quantity: qty,
         donor: document.getElementById('input-donor').value,
@@ -1018,6 +1284,7 @@
         item.tier = 'human';
         state.foodListings.unshift(item);
       }
+      addActivity('📤 Posted Surplus', title + ' — ' + qty + ' portions', qty);
       persist();
       renderAll();
       switchTab('browse');
@@ -1082,9 +1349,85 @@
       }
     }
 
+    // ==================== JUDGE PANEL ====================
+    function updateJudgePanel() {
+      const el = (id) => document.getElementById(id);
+      if (!el('judge-meals')) return;
+      el('judge-meals').textContent = state.mealsSaved;
+      el('judge-animals').textContent = state.animalsFed;
+      el('judge-biogas').textContent = state.biogasLiters + ' L';
+      el('judge-co2').textContent = state.co2Saved + ' kg';
+      const humanKg = state.mealsSaved * 2;
+      const animalKg = state.animalListings.filter(i => i.claimed).reduce((s, i) => s + i.quantity, 0);
+      const biogasKg = Math.round(animalKg * 0.6);
+      el('judge-cascade-human').textContent = humanKg + ' kg';
+      el('judge-cascade-animal').textContent = animalKg + ' kg';
+      el('judge-cascade-biogas').textContent = biogasKg + ' kg';
+      el('judge-car').textContent = Math.round(state.biogasLiters / 1000 * 1.5) + ' km';
+    }
+
+    function updateActivityLog() {
+      const el = document.getElementById('activity-log');
+      if (!el) return;
+      const logs = state.activityLog || [];
+      if (logs.length === 0) {
+        el.innerHTML = '<p class="text-xs text-earth-50/30 text-center py-8">No activity yet. Start claiming food!</p>';
+        return;
+      }
+      el.innerHTML = logs.map(log => `
+        <div class="bg-earth-950 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3 border border-earth-800/50">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-sm shrink-0">${log.action.split(' ')[0]}</span>
+            <div class="min-w-0">
+              <p class="text-xs text-earth-50 truncate">${log.details}</p>
+              <p class="text-[10px] text-earth-50/30">by ${log.user}</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-earth-50/30 shrink-0 whitespace-nowrap">${log.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function exportJudgeReport() {
+      const logs = state.activityLog || [];
+      let report = '========================================\n';
+      report += '  ECOSHARE — JUDGE IMPACT REPORT\n';
+      report += '  Generated: ' + new Date().toLocaleString() + '\n';
+      report += '========================================\n\n';
+      report += 'OVERVIEW\n';
+      report += '---------\n';
+      report += 'Meals to People: ' + state.mealsSaved + '\n';
+      report += 'Animals Fed: ' + state.animalsFed + '\n';
+      report += 'Biogas Generated: ' + state.biogasLiters + ' L\n';
+      report += 'CO₂ Offset: ' + state.co2Saved + ' kg\n';
+      report += 'Total Diverted: ' + state.totalDiverted + ' kg\n\n';
+      report += 'CASCADE MODEL\n';
+      report += '-------------\n';
+      const humanKg = state.mealsSaved * 2;
+      const animalKg = state.animalListings.filter(i => i.claimed).reduce((s, i) => s + i.quantity, 0);
+      const biogasKg = Math.round(animalKg * 0.6);
+      report += 'Food → People: ' + humanKg + ' kg\n';
+      report += 'Food → Animals: ' + animalKg + ' kg\n';
+      report += 'Food → Biogas: ' + biogasKg + ' kg\n\n';
+      report += 'ACTIVITY LOG (' + logs.length + ' entries)\n';
+      report += '----------------\n';
+      logs.forEach(log => {
+        report += '[' + log.time + '] ' + log.action + ' | ' + log.details + ' | by ' + log.user + '\n';
+      });
+      report += '\n========================================\n';
+
+      const blob = new Blob([report], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'EcoShare_Judge_Report_' + new Date().toISOString().slice(0,10) + '.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
     // ==================== INIT ====================
     renderAll();
     calculateBiogas();
+    updateAuthUI();
   </script>
 </body>
 </html>
