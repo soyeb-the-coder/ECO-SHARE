@@ -528,22 +528,22 @@
         </div>
 
         <nav class="flex items-center space-x-1 md:space-x-2 overflow-x-auto">
-          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold bg-yellow-500 text-red-900 whitespace-undo-bold border-2 border-yellow-300">
+          <button onclick="switchTab('browse')" id="nav-browse" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-bold bg-yellow-500 text-red-900 whitespace-nowrap border-2 border-yellow-300">
             <i class="fa-solid fa-bowl-food mr-1 hidden md:inline"></i> Food Feed
           </button>
-          <button onclick="switchTab('list')" id="nav-list" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
+          <button onclick="switchTab('list')" id="nav-list" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
             <i class="fa-solid fa-plus mr-1 hidden md:inline"></i> Post Surplus
           </button>
-          <button onclick="switchTab('animal')" id="nav-animal" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
+          <button onclick="switchTab('animal')" id="nav-animal" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
             <i class="fa-solid fa-paw mr-1 hidden md:inline"></i> Animal Rescue
           </button>
-          <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-earth-900 whitespace-nowrap">
+          <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
             <i class="fa-solid fa-bolt mr-1 hidden md:inline"></i> Biogas
           </button>
-          <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-earth-700 hover:text-orange-500 whitespace-nowrap hidden">
+          <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap hidden">
             <i class="fa-solid fa-crown mr-1 hidden md:inline"></i> Judge Panel
           </button>
-          <button onclick="replayStory()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-earth-500 hover:text-orange-500 border border-earth-300 whitespace-nowrap hidden md:block">
+          <button onclick="replayStory()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 border border-yellow-400/30 whitespace-nowrap hidden md:block">
             <i class="fa-solid fa-play text-[10px] mr-1"></i> Story
           </button>
           <div id="auth-header" class="flex items-center">
@@ -551,9 +551,9 @@
               <i class="fa-solid fa-user mr-1"></i> Login
             </button>
             <div id="btn-user" class="hidden items-center gap-2">
-              <span id="user-name" class="text-xs text-earth-800/80 whitespace-nowrap hidden md:inline"></span>
-              <span class="text-[10px] bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full border border-orange-500/30 whitespace-nowrap">👑 Judge</span>
-              <button onclick="logoutUser()" class="px-2 py-1.5 rounded-full text-xs text-earth-500 hover:text-red-400 whitespace-nowrap" title="Logout">
+              <span id="user-name" class="text-xs text-yellow-300 font-bold whitespace-nowrap hidden md:inline"></span>
+              <span class="text-[10px] bg-yellow-400 text-red-900 px-2 py-0.5 rounded-full border-2 border-yellow-300 whitespace-nowrap font-bold">👑 Judge</span>
+              <button onclick="logoutUser()" class="px-2 py-1.5 rounded-full text-xs text-yellow-300 hover:text-yellow-100 whitespace-nowrap" title="Logout">
                 <i class="fa-solid fa-right-from-bracket"></i>
               </button>
             </div>
