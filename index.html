@@ -140,6 +140,8 @@
   <!-- STORY NARRATIVE OVERLAY (STORY MODE)      -->
   <!-- ========================================== -->
   <div id="story-container" class="min-h-screen flex flex-col justify-between p-6 md:p-12 relative z-10 max-w-5xl mx-auto">
+    <!-- Animated Canvas Background -->
+    <canvas id="story-canvas" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index: -8; opacity: 0.4;"></canvas>
 
     <!-- Top Navigation -->
     <header class="flex justify-between items-center py-4">
@@ -1118,9 +1120,11 @@
 
       currentAct = actNum;
       gsap.fromTo(`#act-${actNum}`, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 });
+      storyAnimations.start(actNum);
     }
 
     function launchPlatform() {
+      storyAnimations.stop();
       gsap.to("#story-container", { opacity: 0, duration: 0.5, onComplete: () => {
         document.getElementById("story-container").classList.add("hidden");
         document.getElementById("platform-container").classList.remove("hidden");
@@ -1136,6 +1140,320 @@
       gsap.set("#story-container", { opacity: 1 });
       nextAct(1);
     }
+
+    // ==================== ANIMATED CANVAS SCENES ====================
+    const storyAnimations = {
+      canvas: null, ctx: null, animId: null, frame: 0, active: false, currentScene: 0,
+
+      init() {
+        this.canvas = document.getElementById('story-canvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      },
+
+      resize() {
+        if (!this.canvas) return;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      },
+
+      start(sceneNum) {
+        this.currentScene = sceneNum;
+        this.frame = 0;
+        this.active = true;
+        this.loop();
+      },
+
+      stop() {
+        this.active = false;
+        if (this.animId) { cancelAnimationFrame(this.animId); this.animId = null; }
+        if (this.ctx) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      },
+
+      loop() {
+        if (!this.active) return;
+        this.frame++;
+        const ctx = this.ctx;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.globalAlpha = 0.4;
+
+        switch (this.currentScene) {
+          case 1: this.sceneFoodWaste(ctx, w, h); break;
+          case 2: this.sceneMethane(ctx, w, h); break;
+          case 3: this.sceneNetwork(ctx, w, h); break;
+          case 4: this.sceneAnimals(ctx, w, h); break;
+          case 5: this.sceneBiogas(ctx, w, h); break;
+        }
+
+        ctx.globalAlpha = 1;
+        this.animId = requestAnimationFrame(() => this.loop());
+      },
+
+      // ---- ACT 1: Falling Food vs Hunger ----
+      sceneFoodWaste(ctx, w, h) {
+        const t = this.frame;
+        // Left half: falling food particles
+        for (let i = 0; i < 20; i++) {
+          const x = (w * 0.15) + (i / 20) * w * 0.3;
+          const y = ((t * 0.5 + i * 37) % (h + 100)) - 100;
+          const size = 4 + Math.sin(i) * 2;
+          const hue = i % 3 === 0 ? '#66BB6A' : (i % 3 === 1 ? '#FF8F00' : '#FFF8E1');
+          ctx.fillStyle = hue;
+          ctx.beginPath();
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fill();
+          // Small shadow
+          ctx.fillStyle = 'rgba(0,0,0,0.2)';
+          ctx.beginPath();
+          ctx.arc(x + 2, y + 2, size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Right half: stick figures reaching up
+        for (let i = 0; i < 5; i++) {
+          const bx = w * 0.65 + (i - 2) * w * 0.07;
+          const by = h * 0.5 + Math.sin(t * 0.03 + i) * 15;
+          // Body
+          ctx.strokeStyle = '#FFB74D';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(bx, by - 20, 8, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(bx, by - 12);
+          ctx.lineTo(bx, by + 15);
+          ctx.stroke();
+          // Arms reaching up
+          const armAngle = Math.sin(t * 0.05 + i * 2) * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(bx, by - 5);
+          ctx.lineTo(bx - 12 - Math.sin(armAngle) * 8, by - 20);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(bx, by - 5);
+          ctx.lineTo(bx + 12 + Math.sin(armAngle) * 8, by - 20);
+          ctx.stroke();
+          // Legs
+          ctx.beginPath();
+          ctx.moveTo(bx, by + 15);
+          ctx.lineTo(bx - 8, by + 30);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(bx, by + 15);
+          ctx.lineTo(bx + 8, by + 30);
+          ctx.stroke();
+        }
+      },
+
+      // ---- ACT 2: Methane Bubbles Rising ----
+      sceneMethane(ctx, w, h) {
+        const t = this.frame;
+        // Landfill base at bottom
+        const grad = ctx.createLinearGradient(0, h - 80, 0, h);
+        grad.addColorStop(0, '#3E2723');
+        grad.addColorStop(1, '#1A0F07');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, h - 80, w, 80);
+
+        // Rising bubbles
+        for (let i = 0; i < 25; i++) {
+          const bubbleX = w * 0.1 + (i * 137 + t) % (w * 0.8);
+          const bubbleY = h - ((t * 0.8 + i * 53) % (h * 0.8));
+          const size = 5 + Math.sin(i * 2 + t * 0.01) * 3;
+          const progress = 1 - (bubbleY / h);
+          // Green at bottom → red at top
+          const r = Math.round(progress * 200);
+          const g = Math.round(150 - progress * 120);
+          const b = Math.round(50 - progress * 40);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.4 - progress * 0.2})`;
+          ctx.beginPath();
+          ctx.arc(bubbleX, bubbleY, size, 0, Math.PI * 2);
+          ctx.fill();
+          // Inner highlight
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.1 - progress * 0.05})`;
+          ctx.beginPath();
+          ctx.arc(bubbleX - 2, bubbleY - 2, size * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Floating text-like particles
+        for (let i = 0; i < 8; i++) {
+          const px = w * 0.1 + (i * 151 + t) % (w * 0.8);
+          const py = ((t * 1.2 + i * 97) % (h * 0.7));
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.05 + Math.sin(t * 0.02 + i) * 0.03})`;
+          ctx.font = '8px monospace';
+          ctx.fillText('CH₄', px, py);
+        }
+      },
+
+      // ---- ACT 3: Network Connecting Nodes ----
+      sceneNetwork(ctx, w, h) {
+        const t = this.frame;
+        const nodes = [
+          { x: w * 0.2, y: h * 0.5, label: '🍽️' },
+          { x: w * 0.8, y: h * 0.5, label: '👥' },
+          { x: w * 0.3, y: h * 0.3, label: '🍚' },
+          { x: w * 0.7, y: h * 0.7, label: '🏠' },
+          { x: w * 0.5, y: h * 0.2, label: '🚚' },
+          { x: w * 0.5, y: h * 0.8, label: '❤️' },
+        ];
+
+        // Draw connections with flowing particles
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const nx = nodes[i].x, ny = nodes[i].y;
+            const mx = nodes[j].x, my = nodes[j].y;
+            // Glowing line
+            ctx.strokeStyle = `rgba(102, 187, 106, ${0.1 + Math.sin(t * 0.02 + i + j) * 0.05})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(nx, ny);
+            ctx.lineTo(mx, my);
+            ctx.stroke();
+
+            // Flowing particle on each connection
+            const progress = ((t * 0.02 + i * 0.3 + j * 0.7) % 1);
+            const px = nx + (mx - nx) * progress;
+            const py = ny + (my - ny) * progress;
+            ctx.fillStyle = '#FFB74D';
+            ctx.beginPath();
+            ctx.arc(px, py, 2 + Math.sin(t * 0.1 + i) * 1, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Draw nodes
+        nodes.forEach((node, i) => {
+          const pulse = 1 + Math.sin(t * 0.03 + i) * 0.2;
+          ctx.fillStyle = `rgba(46, 125, 50, ${0.2 + Math.sin(t * 0.03 + i) * 0.1})`;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, 18 * pulse, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#FFF8E1';
+          ctx.fillText(node.label, node.x, node.y + 6);
+        });
+      },
+
+      // ---- ACT 4: Animal Paw Prints & Hearts ----
+      sceneAnimals(ctx, w, h) {
+        const t = this.frame;
+
+        // Paw prints walking across
+        for (let i = 0; i < 6; i++) {
+          const px = ((t * 0.3 + i * 180) % (w + 100)) - 50;
+          const py = h * 0.3 + Math.sin(t * 0.02 + i * 2) * 40 + i * (h * 0.1);
+          ctx.fillStyle = `rgba(255, 143, 0, ${0.3 - Math.abs(Math.sin(t * 0.05 + i)) * 0.1})`;
+
+          // Draw paw print
+          const s = 8;
+          // Main pad
+          ctx.beginPath();
+          ctx.ellipse(px, py, s, s * 0.8, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // Toes
+          const toeAngles = [-0.5, -0.2, 0.2, 0.5];
+          toeAngles.forEach(angle => {
+            ctx.beginPath();
+            ctx.ellipse(px + Math.sin(angle) * s * 1.2, py - s * 1.1, s * 0.4, s * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // Floating hearts
+        for (let i = 0; i < 5; i++) {
+          const hx = w * 0.15 + (i * 167 + t) % (w * 0.7);
+          const hy = ((t * 0.5 + i * 131) % (h + 50)) - 50;
+          const hs = 6 + Math.sin(t * 0.03 + i) * 2;
+          ctx.fillStyle = `rgba(239, 68, 68, ${0.2 + Math.sin(t * 0.04 + i) * 0.1})`;
+          // Draw heart using two arcs + triangle
+          ctx.beginPath();
+          ctx.arc(hx - hs * 0.5, hy, hs, Math.PI, 0);
+          ctx.arc(hx + hs * 0.5, hy, hs, Math.PI, 0);
+          ctx.lineTo(hx, hy + hs * 1.5);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Text: "Save me" appearing
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.1 + Math.sin(t * 0.02) * 0.05})`;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🐕 🐄 🐱', w * 0.5, h * 0.85);
+      },
+
+      // ---- ACT 5: Biogas Pipeline ----
+      sceneBiogas(ctx, w, h) {
+        const t = this.frame;
+
+        // Pipeline (horizontal line)
+        const pipeY = h * 0.55;
+        ctx.strokeStyle = 'rgba(102, 187, 106, 0.3)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 12]);
+        ctx.beginPath();
+        ctx.moveTo(w * 0.05, pipeY);
+        ctx.lineTo(w * 0.95, pipeY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Flowing particles along pipe
+        for (let i = 0; i < 15; i++) {
+          const progress = ((t * 0.03 + i * 0.07) % 1);
+          const px = w * 0.05 + (w * 0.9) * progress;
+          const offsetY = Math.sin(t * 0.05 + i * 2) * 5;
+          const size = 3 + Math.sin(i) * 1.5;
+          // Color shifts along pipeline: brown → green → gold
+          const r = Math.round(139 - progress * 100);
+          const g = Math.round(90 + progress * 100);
+          const b = Math.round(30 - progress * 20);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.5)`;
+          ctx.beginPath();
+          ctx.arc(px, pipeY + offsetY, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Icons along pipeline
+        const icons = [
+          { x: w * 0.15, label: '🗑️', desc: 'Waste' },
+          { x: w * 0.35, label: '🦠', desc: 'Digest' },
+          { x: w * 0.55, label: '💨', desc: 'Methane' },
+          { x: w * 0.75, label: '🔬', desc: 'Purify' },
+          { x: w * 0.9, label: '🚗', desc: 'Fuel' },
+        ];
+        icons.forEach((icon, i) => {
+          const bounce = Math.sin(t * 0.04 + i * 1.5) * 5;
+          ctx.font = '22px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#FFF8E1';
+          ctx.fillText(icon.label, icon.x, pipeY - 30 + bounce);
+          ctx.font = '9px sans-serif';
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`;
+          ctx.fillText(icon.desc, icon.x, pipeY - 10 + bounce);
+        });
+
+        // Engine/car animation at the end
+        const carX = w * 0.85 + Math.sin(t * 0.02) * 15;
+        const carY = pipeY + 40;
+        ctx.fillStyle = `rgba(102, 187, 106, ${0.2 + Math.sin(t * 0.05) * 0.1})`;
+        // Car body
+        ctx.fillRect(carX - 15, carY - 8, 30, 12);
+        ctx.fillRect(carX - 10, carY - 15, 20, 10);
+        // Wheels
+        ctx.fillStyle = '#3E2723';
+        ctx.beginPath();
+        ctx.arc(carX - 9, carY + 5, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(carX + 9, carY + 5, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
 
     // ==================== PLATFORM STATE (PERSISTENT) ====================
     let state = loadState('state', {
@@ -1450,6 +1768,8 @@
     }
 
     // ==================== INIT ====================
+    storyAnimations.init();
+    storyAnimations.start(1);
     renderAll();
     calculateBiogas();
     updateAuthUI();
