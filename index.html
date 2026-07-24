@@ -1296,14 +1296,14 @@ const storyAnimations = {
 
         // Dark earthy gradient sky
         const sky = ctx.createLinearGradient(0, 0, 0, h);
-        sky.addColorStop(0, 'rgba(26,15,7,0.1)');
-        sky.addColorStop(0.5, 'rgba(62,39,35,0.2)');
-        sky.addColorStop(1, 'rgba(20,10,5,0.3)');
+        sky.addColorStop(0, 'rgba(253,240,213,0.1)');
+        sky.addColorStop(0.5, 'rgba(212,184,122,0.15)');
+        sky.addColorStop(1, 'rgba(74,53,16,0.1)');
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, w, h);
 
         // Ground silhouette with gentle waves
-        ctx.fillStyle = 'rgba(30,18,8,0.5)';
+        ctx.fillStyle = 'rgba(74,53,16,0.15)';
         ctx.beginPath();
         ctx.moveTo(0, h - 40);
         for (let x = 0; x <= w; x += 20) {
@@ -1395,14 +1395,14 @@ const storyAnimations = {
 
         // Smoky sky gradient
         const sky = ctx.createRadialGradient(w/2, h*0.3, 0, w/2, h*0.3, h*0.7);
-        sky.addColorStop(0, 'rgba(80,40,20,0.1)');
-        sky.addColorStop(0.5, 'rgba(120,50,30,0.15)');
-        sky.addColorStop(1, 'rgba(30,15,10,0.3)');
+        sky.addColorStop(0, 'rgba(253,240,213,0.08)');
+        sky.addColorStop(0.5, 'rgba(193,18,31,0.06)');
+        sky.addColorStop(1, 'rgba(74,53,16,0.1)');
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, w, h);
 
         // Landfill silhouette
-        ctx.fillStyle = 'rgba(40,25,15,0.5)';
+        ctx.fillStyle = 'rgba(74,53,16,0.15)';
         ctx.beginPath();
         ctx.moveTo(0, h - 30);
         for (let x = 0; x <= w; x += 10) {
@@ -1464,9 +1464,9 @@ const storyAnimations = {
 
         // Radial warm glow
         const bg = ctx.createRadialGradient(w*0.5, h*0.5, 0, w*0.5, h*0.5, w*0.6);
-        bg.addColorStop(0, 'rgba(46,125,50,0.08)');
-        bg.addColorStop(0.5, 'rgba(26,15,7,0.1)');
-        bg.addColorStop(1, 'rgba(10,5,0,0.2)');
+        bg.addColorStop(0, 'rgba(45,106,79,0.06)');
+        bg.addColorStop(0.5, 'rgba(253,240,213,0.1)');
+        bg.addColorStop(1, 'rgba(62,31,10,0.06)');
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
@@ -1532,7 +1532,7 @@ const storyAnimations = {
           ctx.font = '20px sans-serif';
           ctx.textAlign = 'center';
           ctx.fillStyle = '#FFF8E1';
-          ctx.shadowColor = 'rgba(255,248,225,0.1)';
+          ctx.shadowColor = 'rgba(62,31,10,0.08)';
           ctx.shadowBlur = 8;
           ctx.fillText(node.icon, node.x, node.y + 7);
           ctx.shadowBlur = 0;
@@ -1559,14 +1559,14 @@ const storyAnimations = {
 
         // Warm sunset gradient
         const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, 'rgba(40,20,10,0.1)');
-        bg.addColorStop(0.5, 'rgba(80,40,20,0.15)');
-        bg.addColorStop(1, 'rgba(30,15,5,0.2)');
+        bg.addColorStop(0, 'rgba(255,107,53,0.06)');
+        bg.addColorStop(0.5, 'rgba(193,18,31,0.05)');
+        bg.addColorStop(1, 'rgba(74,53,16,0.08)');
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
         // Ground
-        ctx.fillStyle = 'rgba(40,25,15,0.4)';
+        ctx.fillStyle = 'rgba(74,53,16,0.12)';
         ctx.beginPath();
         ctx.moveTo(0, h - 30);
         for (let x = 0; x <= w; x += 5) {
@@ -1632,9 +1632,9 @@ const storyAnimations = {
 
         // Industrial gradient
         const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, 'rgba(20,30,10,0.1)');
-        bg.addColorStop(0.5, 'rgba(30,40,20,0.15)');
-        bg.addColorStop(1, 'rgba(15,20,10,0.2)');
+        bg.addColorStop(0, 'rgba(253,240,213,0.06)');
+        bg.addColorStop(0.5, 'rgba(45,106,79,0.06)');
+        bg.addColorStop(1, 'rgba(74,53,16,0.08)');
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
@@ -1691,7 +1691,7 @@ const storyAnimations = {
         stations.forEach((st, i) => {
           const bounce = Math.sin(t * 0.03 + i * 1.7) * 4;
           ctx.fillStyle = `rgba(46,125,50,0.15)`;
-          ctx.shadowColor = 'rgba(255,255,255,0.05)';
+          ctx.shadowColor = 'rgba(62,31,10,0.05)';
           ctx.shadowBlur = 8;
           // Manual rounded rect
           const rx = st.x - 18, ry = pipeY - 35 + bounce, rw = 36, rh = 28, r = 4;
@@ -1712,7 +1712,7 @@ const storyAnimations = {
           ctx.font = '20px sans-serif';
           ctx.textAlign = 'center';
           ctx.fillStyle = '#FFF8E1';
-          ctx.shadowColor = 'rgba(255,255,255,0.1)';
+          ctx.shadowColor = 'rgba(62,31,10,0.08)';
           ctx.shadowBlur = 6;
           ctx.fillText(st.icon, st.x, pipeY - 15 + bounce);
           ctx.shadowBlur = 0;
