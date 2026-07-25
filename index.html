@@ -52,6 +52,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- GSAP Animation Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Chart.js for impact dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Caveat:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
@@ -184,9 +186,31 @@
     ::-webkit-scrollbar-track { background: #FDF0D5; }
     ::-webkit-scrollbar-thumb { background: #D4B87A; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
+
+    /* Toast Notifications */
+    #toast-container { position: fixed; top: 80px; right: 16px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 12px 20px; border-radius: 8px; color: #FFF3E0; font-size: 13px; font-weight: 600; box-shadow: 4px 4px 0 rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.15); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.68,-0.55,0.265,1.55); max-width: 320px; }
+    .toast.show { transform: translateX(0); }
+    .toast-success { background: #2D6A4F; border-color: #40916C; }
+    .toast-info { background: #0077B6; border-color: #0096C7; }
+    .toast-warning { background: #FF6B35; border-color: #FF8F00; }
+    .toast-danger { background: #C1121F; border-color: #E63946; }
+
+    /* Mobile bottom nav */
+    .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #C1121F; border-top: 3px solid #FFC300; z-index: 50; padding: 6px 0 env(safe-area-inset-bottom, 4px); }
+    @media (max-width: 768px) {
+      .mobile-nav { display: flex; justify-content: space-around; align-items: center; }
+      main { padding-bottom: 70px !important; }
+    }
+    .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #FFC300; font-size: 9px; font-weight: 700; padding: 4px 8px; text-decoration: none; border: none; background: none; cursor: pointer; }
+    .mobile-nav-btn.active { color: #FFF3E0; background: rgba(255,255,255,0.15); border-radius: 8px; }
+    .mobile-nav-btn i { font-size: 16px; }
   </style>
 </head>
 <body class="text-earth-900 min-h-screen overflow-x-hidden selection:bg-desi-saffron selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
 
   <!-- Rangoli Pattern Background -->
   <div class="rangoli-bg"></div>
@@ -539,6 +563,12 @@
           </button>
           <button onclick="switchTab('biogas')" id="nav-biogas" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
             <i class="fa-solid fa-bolt mr-1 hidden md:inline"></i> Biogas
+          </button>
+          <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
+            <i class="fa-solid fa-chart-pie mr-1 hidden md:inline"></i> Dashboard
+          </button>
+          <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap">
+            <i class="fa-solid fa-trophy mr-1 hidden md:inline"></i> Leaderboard
           </button>
           <button onclick="switchTab('judge')" id="nav-judge" class="nav-btn px-3 md:px-4 py-1.5 rounded-full text-xs font-semibold text-yellow-300 hover:text-yellow-100 whitespace-nowrap hidden">
             <i class="fa-solid fa-crown mr-1 hidden md:inline"></i> Judge Panel
@@ -950,6 +980,92 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+
+      <!-- TAB: IMPACT DASHBOARD -->
+      <section id="tab-dashboard" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-display font-bold text-earth-900">
+            <i class="fa-solid fa-chart-pie text-orange-500 mr-2"></i>Impact Dashboard
+          </h2>
+          <span class="text-xs text-earth-600">Real-time analytics</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div class="bg-white border-3 border-green-600 p-4 text-center" style="box-shadow:3px 3px 0 rgba(45,106,79,0.15)">
+            <p class="text-2xl font-black text-green-700" id="dash-meals">0</p>
+            <p class="text-[10px] text-earth-600 font-bold uppercase">Meals Saved</p>
+          </div>
+          <div class="bg-white border-3 border-orange-500 p-4 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.15)">
+            <p class="text-2xl font-black text-orange-600" id="dash-co2">0 kg</p>
+            <p class="text-[10px] text-earth-600 font-bold uppercase">CO2 Offset</p>
+          </div>
+          <div class="bg-white border-3 border-red-600 p-4 text-center" style="box-shadow:3px 3px 0 rgba(193,18,31,0.15)">
+            <p class="text-2xl font-black text-red-600" id="dash-animals">0</p>
+            <p class="text-[10px] text-earth-600 font-bold uppercase">Animals Fed</p>
+          </div>
+          <div class="bg-white border-3 border-blue-600 p-4 text-center" style="box-shadow:3px 3px 0 rgba(0,119,182,0.15)">
+            <p class="text-2xl font-black text-blue-600" id="dash-biogas">0 L</p>
+            <p class="text-[10px] text-earth-600 font-bold uppercase">Biogas</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white border-3 border-orange-400 p-5" style="box-shadow:4px 4px 0 rgba(255,107,53,0.1)">
+            <h3 class="text-sm font-bold text-earth-900 mb-3">Cascade Breakdown</h3>
+            <canvas id="chart-cascade" height="200"></canvas>
+          </div>
+          <div class="bg-white border-3 border-green-600 p-5" style="box-shadow:4px 4px 0 rgba(45,106,79,0.1)">
+            <h3 class="text-sm font-bold text-earth-900 mb-3">Weekly Impact</h3>
+            <canvas id="chart-impact" height="200"></canvas>
+          </div>
+        </div>
+        <div class="bg-white border-3 border-orange-400 p-5" style="box-shadow:4px 4px 0 rgba(255,107,53,0.1)">
+          <h3 class="text-sm font-bold text-earth-900 mb-3">Campus Map - Live Activity</h3>
+          <div class="relative bg-orange-50 rounded-lg overflow-hidden" style="height:280px; border: 2px dashed #D4B87A;">
+            <svg viewBox="0 0 800 280" class="w-full h-full" id="map-svg"></svg>
+          </div>
+          <div class="flex flex-wrap gap-3 mt-3 text-[10px] font-bold">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span> Food Available</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Volunteer</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span> Shelter</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> Biogas</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: LEADERBOARD -->
+      <section id="tab-leaderboard" class="tab-content hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-display font-bold text-earth-900">
+            <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i>Leaderboard
+          </h2>
+          <span class="text-xs text-earth-600">Top contributors this month</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="bg-yellow-50 border-3 border-yellow-400 p-4 text-center" style="box-shadow:3px 3px 0 rgba(255,195,0,0.2)">
+            <p class="text-3xl mb-1">&#x1F947;</p>
+            <p class="text-xs font-bold text-earth-900">Green Warrior</p>
+            <p class="text-[10px] text-earth-600">Most meals saved</p>
+          </div>
+          <div class="bg-orange-50 border-3 border-orange-400 p-4 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.2)">
+            <p class="text-3xl mb-1">&#x1F43E;</p>
+            <p class="text-xs font-bold text-earth-900">Animal Hero</p>
+            <p class="text-[10px] text-earth-600">Most animals fed</p>
+          </div>
+          <div class="bg-green-50 border-3 border-green-600 p-4 text-center" style="box-shadow:3px 3px 0 rgba(45,106,79,0.2)">
+            <p class="text-3xl mb-1">&#x26A1;</p>
+            <p class="text-xs font-bold text-earth-900">Energy Pioneer</p>
+            <p class="text-[10px] text-earth-600">Most biogas produced</p>
+          </div>
+        </div>
+        <div class="bg-white border-3 border-orange-400 p-5 mb-4" style="box-shadow:4px 4px 0 rgba(255,107,53,0.1)">
+          <h3 class="text-sm font-bold text-earth-900 mb-3">Top Donors</h3>
+          <div id="donor-leaderboard" class="space-y-2"></div>
+        </div>
+        <div class="bg-white border-3 border-green-600 p-5" style="box-shadow:4px 4px 0 rgba(45,106,79,0.1)">
+          <h3 class="text-sm font-bold text-earth-900 mb-3">Top Volunteers</h3>
+          <div id="volunteer-leaderboard" class="space-y-2"></div>
         </div>
       </section>
 
@@ -2082,6 +2198,187 @@ const storyAnimations = {
       a.download = 'EcoShare_Judge_Report_' + new Date().toISOString().slice(0,10) + '.txt';
       a.click();
       URL.revokeObjectURL(a.href);
+    }
+
+
+    // ==================== TOAST NOTIFICATIONS ====================
+    function showToast(message, type) {
+      type = type || 'success';
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-' + type;
+      toast.textContent = message;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    // ==================== CAMPUS MAP ====================
+    function renderCampusMap() {
+      const svg = document.getElementById('map-svg');
+      if (!svg) return;
+      svg.innerHTML = '';
+      // Campus background
+      svg.innerHTML += '<rect x="0" y="0" width="800" height="280" fill="#FFF3E0" rx="8"/>';
+      svg.innerHTML += '<rect x="20" y="20" width="760" height="240" fill="none" stroke="#FFCC80" stroke-width="2" stroke-dasharray="8,4" rx="6"/>';
+
+      // Buildings
+      const buildings = [
+        { x: 50, y: 60, w: 120, h: 70, label: 'Block A
+Canteen', color: '#FFCC80' },
+        { x: 220, y: 50, w: 130, h: 80, label: 'Block B
+Canteen', color: '#FFCC80' },
+        { x: 420, y: 60, w: 100, h: 60, label: 'Hostel
+Mess', color: '#FFE0B2' },
+        { x: 580, y: 50, w: 110, h: 70, label: 'Event
+Hall', color: '#FFE0B2' },
+        { x: 100, y: 170, w: 90, h: 60, label: 'Shelter', color: '#FFCC80' },
+        { x: 350, y: 170, w: 100, h: 60, label: 'Gaushala', color: '#FFCC80' },
+        { x: 550, y: 170, w: 120, h: 60, label: 'Biogas
+Plant', color: '#FFCC80' },
+      ];
+      buildings.forEach(b => {
+        svg.innerHTML += '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" fill="' + b.color + '" stroke="#C1121F" stroke-width="2" rx="4"/>';
+        var lines = b.label.split('\n');
+        lines.forEach(function(line, i) {
+          svg.innerHTML += '<text x="' + (b.x + b.w/2) + '" y="' + (b.y + b.h/2 + (i - (lines.length-1)/2) * 12) + '" text-anchor="middle" font-size="10" font-weight="700" fill="#3E2723">' + line + '</text>';
+        });
+      });
+
+      // Roads
+      svg.innerHTML += '<line x1="170" y1="130" x2="170" y2="170" stroke="#D4B87A" stroke-width="3" stroke-dasharray="4,3"/>';
+      svg.innerHTML += '<line x1="350" y1="130" x2="350" y2="170" stroke="#D4B87A" stroke-width="3" stroke-dasharray="4,3"/>';
+      svg.innerHTML += '<line x1="520" y1="130" x2="520" y2="170" stroke="#D4B87A" stroke-width="3" stroke-dasharray="4,3"/>';
+
+      // Live pins from state
+      var listings = (state.foodListings || []).filter(function(i) { return !i.claimed && i.tier !== 'animal'; });
+      listings.forEach(function(item, i) {
+        var bx = 80 + (i * 170) % 700;
+        var by = 40 + (i * 37) % 80;
+        svg.innerHTML += '<circle cx="' + bx + '" cy="' + by + '" r="6" fill="#2D6A4F" opacity="0.8"><animate attributeName="r" values="6;9;6" dur="2s" repeatCount="indefinite"/></circle>';
+        svg.innerHTML += '<circle cx="' + bx + '" cy="' + by + '" r="3" fill="white"/>';
+      });
+
+      var animalItems = (state.animalListings || []).filter(function(i) { return !i.claimed; });
+      animalItems.forEach(function(item, i) {
+        var sx = 140 + (i * 200) % 500;
+        var sy = 200 + (i * 13) % 40;
+        svg.innerHTML += '<circle cx="' + sx + '" cy="' + sy + '" r="5" fill="#FF6B35" opacity="0.8"><animate attributeName="r" values="5;8;5" dur="2.5s" repeatCount="indefinite"/></circle>';
+      });
+    }
+
+    // ==================== CHART.JS CHARTS ====================
+    var cascadeChart = null;
+    var impactChart = null;
+
+    function renderCharts() {
+      // Cascade Pie Chart
+      var cascadeCtx = document.getElementById('chart-cascade');
+      if (cascadeCtx) {
+        var humanKg = state.mealsSaved * 2;
+        var animalKg = (state.animalListings || []).filter(function(i) { return i.claimed; }).reduce(function(s, i) { return s + i.quantity; }, 0);
+        var biogasKg = Math.round(animalKg * 0.6);
+
+        if (cascadeChart) cascadeChart.destroy();
+        cascadeChart = new Chart(cascadeCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['To People', 'To Animals', 'To Biogas'],
+            datasets: [{ data: [humanKg || 1, animalKg || 1, biogasKg || 1], backgroundColor: ['#2D6A4F', '#FF6B35', '#0077B6'], borderWidth: 3, borderColor: '#FFF3E0' }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11, weight: 'bold' }, color: '#3E2723' } } } }
+        });
+      }
+
+      // Impact Bar Chart
+      var impactCtx = document.getElementById('chart-impact');
+      if (impactCtx) {
+        var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        var meals = days.map(function() { return Math.floor(Math.random() * state.mealsSaved * 0.3); });
+        var co2 = meals.map(function(m) { return Math.round(m * 1.25); });
+
+        if (impactChart) impactChart.destroy();
+        impactChart = new Chart(impactCtx, {
+          type: 'bar',
+          data: {
+            labels: days,
+            datasets: [
+              { label: 'Meals Saved', data: meals, backgroundColor: '#2D6A4F', borderRadius: 4 },
+              { label: 'CO2 Offset (kg)', data: co2, backgroundColor: '#FF6B35', borderRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 10, weight: 'bold' }, color: '#3E2723' } } },
+            scales: { y: { beginAtZero: true, grid: { color: '#FFE0B2' }, ticks: { color: '#6B4F12', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#6B4F12', font: { size: 10 } } } }
+          }
+        });
+      }
+    }
+
+    // ==================== LEADERBOARD ====================
+    var leaderboardData = {
+      donors: [
+        { name: 'Block C Mess', meals: 85, badge: 'Green Warrior' },
+        { name: 'Tech Fest Team', meals: 42, badge: '' },
+        { name: 'Student Welfare', meals: 38, badge: '' },
+        { name: 'Hostel 4 Mess', meals: 25, badge: '' },
+        { name: 'Cultural Committee', meals: 20, badge: '' },
+      ],
+      volunteers: [
+        { name: 'Rahul K.', deliveries: 28, badge: 'Animal Hero' },
+        { name: 'Priya S.', deliveries: 22, badge: '' },
+        { name: 'Amit R.', deliveries: 18, badge: '' },
+        { name: 'Sneha P.', deliveries: 15, badge: '' },
+        { name: 'Vikram T.', deliveries: 12, badge: '' },
+      ]
+    };
+
+    function renderLeaderboard() {
+      var donorEl = document.getElementById('donor-leaderboard');
+      var volEl = document.getElementById('volunteer-leaderboard');
+      if (!donorEl || !volEl) return;
+
+      var medals = ['&#x1F947;', '&#x1F948;', '&#x1F949;', '4', '5'];
+      donorEl.innerHTML = leaderboardData.donors.map(function(d, i) {
+        return '<div class="flex items-center justify-between bg-orange-50 border-2 border-orange-200 p-3 rounded-lg">' +
+          '<div class="flex items-center gap-3">' +
+            '<span class="text-lg font-bold w-8 text-center">' + medals[i] + '</span>' +
+            '<div><p class="text-sm font-bold text-earth-900">' + d.name + '</p>' +
+            (d.badge ? '<span class="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">' + d.badge + '</span>' : '') +
+            '</div></div>' +
+            '<span class="text-sm font-black text-green-700">' + d.meals + ' meals</span></div>';
+      }).join('');
+
+      volEl.innerHTML = leaderboardData.volunteers.map(function(v, i) {
+        return '<div class="flex items-center justify-between bg-green-50 border-2 border-green-200 p-3 rounded-lg">' +
+          '<div class="flex items-center gap-3">' +
+            '<span class="text-lg font-bold w-8 text-center">' + medals[i] + '</span>' +
+            '<div><p class="text-sm font-bold text-earth-900">' + v.name + '</p>' +
+            (v.badge ? '<span class="text-[9px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">' + v.badge + '</span>' : '') +
+            '</div></div>' +
+            '<span class="text-sm font-black text-orange-600">' + v.deliveries + ' deliveries</span></div>';
+      }).join('');
+    }
+
+    // ==================== UPDATE DASHBOARD STATS ====================
+    function updateDashboard() {
+      var el = function(id) { return document.getElementById(id); };
+      if (el('dash-meals')) el('dash-meals').textContent = state.mealsSaved;
+      if (el('dash-co2')) el('dash-co2').textContent = state.co2Saved + ' kg';
+      if (el('dash-animals')) el('dash-animals').textContent = state.animalsFed;
+      if (el('dash-biogas')) el('dash-biogas').textContent = state.biogasLiters + ' L';
+    }
+
+    // ==================== MOBILE NAV SYNC ====================
+    function syncMobileNav(tab) {
+      document.querySelectorAll('.mobile-nav-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      var mobBtn = document.getElementById('mob-' + tab);
+      if (mobBtn) mobBtn.classList.add('active');
     }
 
     // ==================== INIT ====================
