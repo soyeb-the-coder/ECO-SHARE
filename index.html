@@ -2535,7 +2535,20 @@ const storyAnimations = {
       }
     }
     var notifTimer = setInterval(function() {
-      var msgs = ['New surplus food listed!', 'Someone claimed a listing!', 'Animal shelter needs food', 'Biogas plant needs waste', '5 new meals available', 'Temperature alert: caution zone'];
+      // Only show notifications based on actual state
+      var active = (state.foodListings || []).filter(function(i) { return !i.claimed && i.tier !== 'animal'; });
+      var claimed = (state.foodListings || []).filter(function(i) { return i.claimed; });
+      var animalActive = (state.animalListings || []).filter(function(i) { return !i.claimed; });
+
+      var msgs = [];
+      if (active.length > 0) msgs.push(active.length + ' food batches available for claim');
+      if (claimed.length > 0) msgs.push(claimed.length + ' batches claimed today');
+      if (animalActive.length > 0) msgs.push(animalActive.length + ' animal-safe batches waiting');
+      if (state.mealsSaved > 0) msgs.push(state.mealsSaved + ' meals saved from trash so far');
+      msgs.push('EcoShare tip: Post surplus food to reduce waste');
+      msgs.push('Check the Dashboard tab for impact charts');
+      msgs.push('Campus is active — ' + active.length + ' batches live');
+
       var m = msgs[Math.floor(Math.random() * msgs.length)];
       if (!state.notifications) state.notifications = [];
       state.notifications.unshift({ msg: m, time: new Date().toLocaleTimeString() });
