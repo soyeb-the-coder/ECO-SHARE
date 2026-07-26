@@ -2633,10 +2633,19 @@ const storyAnimations = {
     renderAll();
     calculateBiogas();
     updateAuthUI();
+    renderCharts();
     renderTempMonitor();
     renderRoute();
     renderCampus();
     renderNotifications();
+
+    // Greeting on page load if logged in
+    if (currentUser && currentUser.name) {
+      setTimeout(function() {
+        showToast('Welcome back, ' + currentUser.name + '! Ready to make an impact.', 'success');
+      }, 1500);
+    }
+
     // Welcome notification
     setTimeout(function() {
       state.notifications = [{ msg: 'Welcome to EcoShare! Post surplus food or claim available meals.', time: new Date().toLocaleTimeString() }];
