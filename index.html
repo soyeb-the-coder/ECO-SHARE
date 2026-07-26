@@ -1293,6 +1293,13 @@
     // --- Email/Password Login (works with or without Firebase) ---
     function loginWithEmail(e) {
       e.preventDefault();
+      var emailVal = document.getElementById('auth-email').value;
+      var passVal = document.getElementById('auth-password').value;
+      if (!emailVal || !passVal) {
+        document.getElementById('auth-error').textContent = 'Please enter email and password.';
+        document.getElementById('auth-error').classList.remove('hidden');
+        return;
+      }
       if (!USE_FIREBASE || typeof firebase === "undefined" || !firebase || !firebase.auth) {
         var email = document.getElementById('auth-email').value || 'user@demo.com';
         currentUser = { name: email, email: email, isJudge: false, isDemo: true };
@@ -1320,6 +1327,13 @@
     }
 
     function signUpEmail() {
+      var emailVal = document.getElementById('auth-email').value;
+      var passVal = document.getElementById('auth-password').value;
+      if (!emailVal || !passVal) {
+        document.getElementById('auth-error').textContent = 'Please enter email and password first.';
+        document.getElementById('auth-error').classList.remove('hidden');
+        return;
+      }
       if (!USE_FIREBASE || typeof firebase === "undefined" || !firebase || !firebase.auth) {
         var email = document.getElementById('auth-email').value || 'newuser@demo.com';
         currentUser = { name: email, email: email, isJudge: false, isDemo: true };
