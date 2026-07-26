@@ -1199,18 +1199,16 @@
     // 2. Create Project → Add Web App → copy config below
     // 3. Firestore → Create Database → Start in test mode
     //
-    // firebase.initializeApp({
-    //   apiKey: "YOUR_API_KEY",
-    //   authDomain: "YOUR_PROJECT.firebaseapp.com",
-    //   projectId: "YOUR_PROJECT",
-    //   storageBucket: "YOUR_PROJECT.appspot.com",
-    //   messagingSenderId: "YOUR_SENDER_ID",
-    //   appId: "YOUR_APP_ID"
-    // });
-    // try { const db = firebase.firestore(); } catch(e) {}
-    // const USE_FIREBASE = true;
-    const USE_FIREBASE = false;
-    let db = null;
+    firebase.initializeApp({
+      apiKey: "AIzaSyDxi2Mgig3mLuvW9-VqU7M3iJmqmrtoFQ8",
+      authDomain: "eco-share-26.firebaseapp.com",
+      projectId: "eco-share-26",
+      storageBucket: "eco-share-26.firebasestorage.app",
+      messagingSenderId: "495956781611",
+      appId: "1:495956781611:web:496e787b4e20faafb3186e"
+    });
+    const db = firebase.firestore();
+    const USE_FIREBASE = true;
 
     // ==================== LOCAL STORAGE PERSISTENCE ====================
     function loadState(key, def) {
