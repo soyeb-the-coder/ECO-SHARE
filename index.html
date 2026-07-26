@@ -496,14 +496,14 @@
       <!-- Email/Password -->
       <form onsubmit="loginWithEmail(event)" class="space-y-3">
         <input type="email" id="auth-email" placeholder="Email address" required
-          class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/40">
+          class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-gray-400">
         <input type="password" id="auth-password" placeholder="Password (min 6 chars)" minlength="6" required
-          class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/40">
+          class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-gray-400">
         <div class="flex gap-2">
           <button type="submit" class="flex-1 bg-fuchsia-500 hover:bg-mint-600 text-white font-bold py-2.5 rounded-xl transition-all text-sm">
             Sign In
           </button>
-          <button type="button" onclick="signUpEmail()" class="flex-1 bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 rounded-xl transition-all text-sm">
+          <button type="button" onclick="signUpEmail()" class="flex-1 bg-white/10 hover:bg-fuchsia-500/20 text-white font-bold py-2.5 rounded-xl transition-all text-sm">
             Sign Up
           </button>
         </div>
@@ -693,24 +693,24 @@
             <div>
               <label class="block text-xs font-bold text-white/60 uppercase mb-1">Food Item</label>
               <input type="text" id="input-title" required placeholder="e.g. Veg Biryani (20 Portions)"
-                class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/80/20">
+                class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-white/80/20">
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-bold text-white/60 uppercase mb-1">Pickup Location</label>
                 <input type="text" id="input-location" required placeholder="Hostel 4 Mess"
-                  class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/80/20">
+                  class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-white/80/20">
               </div>
               <div>
                 <label class="block text-xs font-bold text-white/60 uppercase mb-1">Portions</label>
                 <input type="number" id="input-quantity" min="1" required placeholder="15"
-                  class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/80/20">
+                  class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-white/80/20">
               </div>
             </div>
             <div>
               <label class="block text-xs font-bold text-white/60 uppercase mb-1">Donor Name</label>
               <input type="text" id="input-donor" required placeholder="Campus Mess Committee"
-                class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white focus:outline-none focus:border-leaf-500 placeholder:text-white/80/20">
+                class="w-full px-4 py-2.5 rounded-xl bg-[#1e0a3c] border border-white/20 text-sm text-white focus:outline-none focus:border-fuchsia-500 placeholder:text-white/80/20">
             </div>
             <div class="flex items-center gap-2">
               <input type="checkbox" id="input-animal-safe" class="accent-saffron-500 w-4 h-4">
@@ -1124,10 +1124,10 @@
       <section id="tab-temp" class="tab-content hidden">
         <div class="signboard text-xs mb-4" style="padding:6px 16px;"><i class="fa-solid fa-temperature-half mr-1"></i> Food Safety Monitor</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="temp-danger-count">0</p><p class="text-[9px] text-white/60">Danger</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#00E5FF;" id="temp-warning-count">0</p><p class="text-[9px] text-white/60">Caution</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="temp-safe-count">0</p><p class="text-[9px] text-white/60">Safe</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="temp-total-count">0</p><p class="text-[9px] text-white/60">Total</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="temp-danger-count">0</p><p class="text-[9px] text-white/60">Danger</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#00E5FF;" id="temp-warning-count">0</p><p class="text-[9px] text-white/60">Caution</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="temp-safe-count">0</p><p class="text-[9px] text-white/60">Safe</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="temp-total-count">0</p><p class="text-[9px] text-white/60">Total</p></div>
         </div>
         <div class="card-folk mb-4"><h3 class="text-sm font-bold text-white mb-3"><i class="fa-solid fa-list mr-1 text-fuchsia-400"></i> Live Monitor</h3><div id="temp-monitor-list" class="space-y-2"><p class="text-xs text-white/40 text-center py-4">Post food with temperature data to track safety</p></div></div>
       </section>
@@ -1136,10 +1136,10 @@
       <section id="tab-route" class="tab-content hidden">
         <div class="signboard text-xs mb-4" style="padding:6px 16px;"><i class="fa-solid fa-route mr-1"></i> Route Optimizer</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="route-total">0</p><p class="text-[9px] text-white/60">Routes</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="route-saved">0 km</p><p class="text-[9px] text-white/60">Saved</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#00E5FF;" id="route-deliveries">0</p><p class="text-[9px] text-white/60">Delivered</p></div>
-          <div class="bg-[#1a0533]/60 border border-fuchsia-500 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="route-avg-time">0m</p><p class="text-[9px] text-white/60">Avg</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="route-total">0</p><p class="text-[9px] text-white/60">Routes</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#E040FB;" id="route-saved">0 km</p><p class="text-[9px] text-white/60">Saved</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black" style="color:#00E5FF;" id="route-deliveries">0</p><p class="text-[9px] text-white/60">Delivered</p></div>
+          <div class="bg-[#1a0533] border border-white/10 p-3 text-center" style="box-shadow:3px 3px 0 rgba(255,107,53,0.1)"><p class="text-2xl font-black text-white" id="route-avg-time">0m</p><p class="text-[9px] text-white/60">Avg</p></div>
         </div>
         <div class="card-folk mb-4"><div id="route-delivery-list" class="space-y-2"><p class="text-xs text-white/40 text-center py-4">Routes appear here</p></div><button onclick="optimizeAllRoutes()" class="btn-folk-green text-xs py-2 px-4 mt-3">Optimize All</button></div>
       </section>
