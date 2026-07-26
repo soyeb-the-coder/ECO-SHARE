@@ -1283,6 +1283,7 @@
         closeLoginModal();
         updateAuthUI();
         renderAll();
+        showToast('Welcome ' + (user.displayName || user.email) + '! Signed in with Google.', 'success');
       }).catch(err => {
         document.getElementById('auth-error').textContent = err.message;
         document.getElementById('auth-error').classList.remove('hidden');
@@ -1311,6 +1312,7 @@
         closeLoginModal();
         updateAuthUI();
         renderAll();
+        showToast('Welcome back ' + user.email + '!', 'success');
       }).catch(err => {
         document.getElementById('auth-error').textContent = err.message;
         document.getElementById('auth-error').classList.remove('hidden');
@@ -1334,9 +1336,16 @@
         const user = result.user;
         currentUser = { name: user.email, email: user.email, isJudge: true, isDemo: false };
         saveState('authUser', currentUser);
+        // Send verification email
+        if (user.sendEmailVerification) {
+          user.sendEmailVerification().then(function() {
+            showToast('Verification email sent to ' + user.email + '!', 'info');
+          }).catch(function() {});
+        }
         closeLoginModal();
         updateAuthUI();
         renderAll();
+        showToast('Welcome ' + user.email + '! Account created successfully.', 'success');
       }).catch(err => {
         document.getElementById('auth-error').textContent = err.message;
         document.getElementById('auth-error').classList.remove('hidden');
