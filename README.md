@@ -4,7 +4,7 @@
 
 EcoShare is a zero-waste cascade platform that connects surplus campus food with hungry people, malnourished animals, and biogas facilities — ensuring nothing goes to landfill.
 
-Built for **FusioniX '26 Hackathon** | Sustainability Track
+EcoShare — Surplus to Sustain
 
 ---
 
@@ -144,6 +144,6 @@ ECO-SHARE/
 
 ## License
 
-Built with ❤️ for FusioniX '26 Hackathon
+Built with ❤️ for a sustainable future
 
 **Soyeb Ahmad** — [GitHub](https://github.com/soyeb-the-coder)

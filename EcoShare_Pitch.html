@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoShare — Pitch · Sustainability Track</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:wght@700;900&family=Noto+Sans+Devanagari:wght@500;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1C1008; color: #FFF8E1; font-family: 'Inter', sans-serif;
+      overflow: hidden; width: 100vw; height: 100vh;
+    }
+    .slide {
+      display: none; position: fixed; inset: 0; width: 100vw; height: 100vh;
+      padding: 60px 80px; flex-direction: column; justify-content: center;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide canvas.bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .slide > *:not(canvas) { position: relative; z-index: 1; }
+
+    /* Controls */
+    #controls {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: flex; align-items: center; gap: 16px;
+      background: rgba(28,16,8,0.85); padding: 10px 24px;
+      border-radius: 60px; border: 2px solid rgba(198,40,40,0.3);
+      backdrop-filter: blur(10px);
+    }
+    #controls button {
+      background: none; border: none; color: #FFF8E1; font-size: 18px; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    #controls button:hover { background: rgba(198,40,40,0.3); }
+    #controls button:active { transform: scale(0.9); }
+    #controls .go-btn {
+      background: #C62828; border: 2px solid #F9A825; color: #FFF8E1; font-weight: 800;
+      padding: 8px 24px; border-radius: 40px; width: auto; font-size: 13px; text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #controls .go-btn:hover { background: #EF5350; }
+    #dots { display: flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,248,225,0.2); transition: all 0.3s; cursor: pointer; }
+    .dot.active { width: 24px; border-radius: 4px; background: #C62828; }
+    #slide-number { font-size: 12px; color: rgba(255,248,225,0.5); font-weight: 600; min-width: 30px; text-align: center; }
+
+    /* Typography */
+    h1 { font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+    h2 { font-family: 'Noto Sans Devanagari', sans-serif; font-size: 48px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
+    h3 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { font-size: 18px; color: rgba(255,248,225,0.6); max-width: 760px; line-height: 1.6; }
+    .accent { color: #EF5350; }
+    .gold { color: #F9A825; }
+    .green { color: #66BB6A; }
+    .tag {
+      display: inline-block; padding: 4px 14px; border-radius: 40px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;
+    }
+    .tag-red { background: rgba(198,40,40,0.2); color: #EF5350; border: 1px solid rgba(198,40,40,0.3); }
+    .tag-gold { background: rgba(249,168,37,0.15); color: #F9A825; border: 1px solid rgba(249,168,37,0.3); }
+    .tag-green { background: rgba(46,125,50,0.15); color: #66BB6A; border: 1px solid rgba(46,125,50,0.3); }
+
+    /* Animated gradient background */
+    .gradient-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(198,40,40,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 50%, rgba(249,168,37,0.06) 0%, transparent 50%);
+    }
+
+    /* Stat cards */
+    .stat-row { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+    .stat-card {
+      background: rgba(42,26,14,0.8); border: 1px solid rgba(198,40,40,0.2); border-left: 3px solid #C62828;
+      padding: 16px 24px; border-radius: 8px; min-width: 140px;
+    }
+    .stat-card .num { font-size: 32px; font-weight: 900; color: #EF5350; }
+    .stat-card .label { font-size: 11px; color: rgba(255,248,225,0.5); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Cascade cards */
+    .cascade-row { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+    .cascade-card {
+      background: rgba(42,26,14,0.8); border: 1px solid rgba(198,40,40,0.15); border-top: 3px solid #C62828;
+      padding: 24px; border-radius: 12px; flex: 1; min-width: 200px; max-width: 280px;
+    }
+    .cascade-card .emoji { font-size: 36px; margin-bottom: 8px; }
+    .cascade-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .cascade-card p { font-size: 13px; color: rgba(255,248,225,0.5); line-height: 1.5; }
+
+    /* Feature grid */
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; max-width: 900px; }
+    .feature-item {
+      background: rgba(42,26,14,0.7); padding: 16px; border-radius: 8px;
+      border: 1px solid rgba(249,168,37,0.1);
+    }
+    .feature-item .icon { font-size: 22px; margin-bottom: 4px; }
+    .feature-item h5 { font-size: 14px; font-weight: 700; color: #F9A825; margin-bottom: 2px; }
+    .feature-item p { font-size: 11px; color: rgba(255,248,225,0.5); line-height: 1.4; }
+
+    /* Comparison table */
+    .comp-table { margin-top: 20px; max-width: 900px; }
+    .comp-row { display: flex; border-bottom: 1px solid rgba(255,248,225,0.06); }
+    .comp-row.header { background: rgba(198,40,40,0.15); border-radius: 8px 8px 0 0; font-weight: 800; }
+    .comp-cell { padding: 10px 16px; flex: 1; font-size: 13px; }
+    .comp-cell:first-child { flex: 0.7; color: #F9A825; font-weight: 700; }
+    .comp-cell:nth-child(2) { color: rgba(255,248,225,0.4); }
+    .comp-cell:last-child { color: #FFF8E1; }
+    .comp-row:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+    /* Tech items */
+    .tech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; max-width: 900px; }
+    .tech-item {
+      background: rgba(42,26,14,0.7); padding: 14px; border-radius: 8px; text-align: center;
+      border-top: 2px solid #C62828;
+    }
+    .tech-item h5 { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+    .tech-item p { font-size: 10px; color: rgba(255,248,225,0.5); line-height: 1.3; }
+
+    /* Roadmap */
+    .road-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; max-width: 800px; }
+    .road-item { background: rgba(42,26,14,0.7); padding: 14px; border-radius: 8px; border-left: 3px solid #C62828; }
+    .road-item .icon { font-size: 20px; }
+    .road-item h5 { font-size: 14px; font-weight: 700; }
+    .road-item p { font-size: 11px; color: rgba(255,248,225,0.5); }
+
+    /* ============ ARCHITECTURE DIAGRAM ============ */
+    .arch-wrap { display: flex; gap: 22px; margin-top: 22px; align-items: stretch; max-width: 1100px; }
+    .arch-stack { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .arch-layer {
+      background: rgba(42,26,14,0.85); border: 1px solid rgba(198,40,40,0.25);
+      border-left: 4px solid #C62828; padding: 12px 16px; border-radius: 10px;
+    }
+    .arch-layer h5 { font-size: 15px; font-weight: 800; margin-bottom: 5px; display: flex; align-items: center; }
+    .arch-layer .sub { font-size: 12px; color: rgba(255,248,225,0.55); line-height: 1.5; }
+    .arch-layer .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .dot-mark { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .arch-arrow { text-align: center; color: #F9A825; font-size: 13px; line-height: 1; padding: 1px 0; }
+    .chip {
+      font-size: 10px; padding: 3px 10px; border-radius: 30px; font-weight: 700; letter-spacing: 0.4px;
+      background: rgba(198,40,40,0.12); color: #EF5350; border: 1px solid rgba(198,40,40,0.3);
+    }
+    .chip.gold { background: rgba(249,168,37,0.1); color: #F9A825; border-color: rgba(249,168,37,0.3); }
+    .chip.green { background: rgba(46,125,50,0.15); color: #66BB6A; border-color: rgba(46,125,50,0.35); }
+    .arch-side {
+      width: 250px; background: rgba(46,125,50,0.08); border: 1px solid rgba(46,125,50,0.3);
+      border-left: 4px solid #66BB6A; padding: 14px 16px; border-radius: 10px;
+      display: flex; flex-direction: column;
+    }
+
+    /* ============ SENSOR MAP ============ */
+    .map-frame {
+      position: relative; margin-top: 22px; max-width: 1000px; height: 400px;
+      border: 2px solid rgba(198,40,40,0.3); border-radius: 16px; overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 30%, rgba(46,125,50,0.14), transparent 42%),
+        radial-gradient(circle at 80% 72%, rgba(46,125,50,0.10), transparent 42%),
+        linear-gradient(160deg, rgba(42,26,14,0.9), rgba(28,16,8,0.96));
+    }
+    .map-zone {
+      position: absolute; background: rgba(255,248,225,0.05); border: 1px dashed rgba(255,248,225,0.14);
+      border-radius: 10px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: #FFF8E1;
+    }
+    .pin {
+      position: absolute; width: 15px; height: 15px; border-radius: 50%;
+      border: 2px solid #fff; background: #EF5350; box-shadow: 0 0 12px rgba(239,83,80,0.8);
+    }
+    .pin.sensor { background: #EF5350; animation: pulse 2s infinite; }
+    .pin.shelter { background: #F9A825; box-shadow: 0 0 12px rgba(249,168,37,0.8); }
+    .pin.plant { background: #66BB6A; width: 20px; height: 20px; border-radius: 6px; box-shadow: 0 0 12px rgba(102,187,106,0.8); }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239,83,80,0.6); }
+      100% { box-shadow: 0 0 0 14px rgba(239,83,80,0); }
+    }
+    .map-legend {
+      position: absolute; bottom: 10px; left: 12px; display: flex; gap: 18px;
+      font-size: 11px; color: rgba(255,248,225,0.75); align-items: center;
+    }
+    .map-legend .pin { position: static; display: inline-block; vertical-align: middle; margin-right: 4px; }
+    .map-legend .pin.plant { width: 14px; height: 14px; border-radius: 4px; }
+
+    /* ============ SUSTAINABILITY TARGETS ============ */
+    .target-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; max-width: 1000px; }
+    .target-card {
+      background: rgba(42,26,14,0.8); border: 1px solid rgba(198,40,40,0.2);
+      border-top: 3px solid #C62828; padding: 14px 18px; border-radius: 12px;
+    }
+    .target-card .big { font-size: 32px; font-weight: 900; color: #EF5350; line-height: 1; }
+    .target-card .big.gold { color: #F9A825; }
+    .target-card .big.green { color: #66BB6A; }
+    .target-card .cap { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,248,225,0.6); margin-top: 4px; font-weight: 700; }
+    .target-card p { font-size: 12px; color: rgba(255,248,225,0.5); margin-top: 6px; line-height: 1.5; }
+    .target-bar { height: 6px; border-radius: 4px; background: rgba(255,248,225,0.08); margin-top: 10px; overflow: hidden; }
+    .target-bar > i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #C62828, #EF5350); }
+    .target-bar > i.gold { background: linear-gradient(90deg, #b2730a, #F9A825); }
+    .target-bar > i.green { background: linear-gradient(90deg, #2E7D32, #66BB6A); }
+    .phase-strip { display: flex; gap: 8px; margin-top: 16px; max-width: 1000px; }
+    .phase {
+      flex: 1; text-align: center; font-size: 11px; padding: 8px;
+      border-radius: 8px; background: rgba(255,248,225,0.04); border: 1px solid rgba(255,248,225,0.08);
+      color: rgba(255,248,225,0.6);
+    }
+    .phase b { display: block; color: #F9A825; font-size: 12px; margin-bottom: 2px; }
+
+    /* Particle canvas */
+    #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* Slide-specific layouts */
+    .slide-content { max-width: 1100px; }
+
+    @media (max-width: 768px) {
+      .slide { padding: 30px 24px; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 26px; }
+      .feature-grid, .tech-grid, .road-grid, .target-grid { grid-template-columns: 1fr 1fr; }
+      .arch-wrap { flex-direction: column; }
+      .arch-side { width: 100%; }
+      .map-frame { height: 300px; }
+      .stat-card { min-width: 100px; }
+      .stat-card .num { font-size: 24px; }
+      #controls { padding: 6px 16px; gap: 8px; }
+      #controls button { width: 32px; height: 32px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-slide="1">
+  <div class="gradient-bg"></div>
+  <canvas class="bg-canvas" id="canvas-1"></canvas>
+  <div class="slide-content">
+    <div class="tag tag-red"><i class="fa-solid fa-leaf"></i> Sustainability Track</div>
+    <h1 id="title-line1">EcoShare</h1>
+    <h2 class="gold" id="title-line2">Surplus to Sustain</h2>
+    <p class="subtitle" id="title-line3">A zero-waste cascade that connects campus food surplus to people, animals — and energy. Smart bins <span class="accent">sense waste in real time</span>, and the platform turns every kg into meals, animal feed, and biomethane fuel.</p>
+    <div class="stat-row" id="title-stats">
+      <div class="stat-card"><div class="num">67M</div><div class="label">Tonnes wasted yearly</div></div>
+      <div class="stat-card" style="border-left-color:#F9A825;"><div class="num" style="color:#F9A825;">194M</div><div class="label">Undernourished Indians</div></div>
+      <div class="stat-card" style="border-left-color:#66BB6A;"><div class="num" style="color:#66BB6A;">60M</div><div class="label">Stray animals starving</div></div>
+    </div>
+    <p class="subtitle" style="font-size:13px;margin-top:20px;color:rgba(255,248,225,0.3);">Press <span style="color:#EF5350;font-weight:700;">→</span> or click to explore</p>
+  </div>
+</div>
+
+<!-- SLIDE 2: THE PROBLEM -->
+<div class="slide" data-slide="2">
+  <div class="gradient-bg"></div>
+  <canvas class="bg-canvas" id="canvas-2"></canvas>
+  <div class="slide-content">
+    <div class="tag tag-red"><i class="fa-solid fa-exclamation-triangle"></i> The Crisis</div>
+    <h2 id="p-line1">India wastes <span class="accent">67 million tonnes</span> of food every year</h2>
+    <p class="subtitle" id="p-line2">Enough to feed every malnourished person in the country three times over. Meanwhile, food rotting in landfills produces <strong style="color:#EF5350;">methane — 25x more potent than CO₂</strong> — a wasted energy source that no one is capturing.</p>
+    <div class="stat-row" id="p-stats">
+      <div class="stat-card"><div class="num">₹92,000 Cr</div><div class="label">Value of food wasted annually</div></div>
+      <div class="stat-card" style="border-left-color:#F9A825;"><div class="num" style="color:#F9A825;">8-10%</div><div class="label">Global emissions from food waste</div></div>
+      <div class="stat-card" style="border-left-color:#66BB6A;"><div class="num" style="color:#66BB6A;">25x</div><div class="label">Methane vs CO₂ potency</div></div>
+    </div>
+    <p class="subtitle" style="font-size:14px;margin-top:16px;color:rgba(255,248,225,0.5);"><i class="fa-solid fa-lightbulb gold"></i> The problem isn't just hunger — it's wasted energy. And nobody's solving both together.</p>
+  </div>
+</div>
+
+<!-- SLIDE 3: THE SOLUTION - CASCADE -->
+<div class="slide" data-slide="3">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-gold"><i class="fa-solid fa-arrows-spin"></i> The Solution</div>
+    <h2 id="s-line1">Introducing the <span class="gold">Zero-Waste Cascade</span></h2>
+    <p class="subtitle" id="s-line2">Every kg of food finds its highest purpose — people, animals, or fuel. Nothing reaches landfill.</p>
+    <div class="cascade-row" id="cascade-cards">
+      <div class="cascade-card" style="border-top-color:#C62828;">
+        <div class="emoji">🍽️</div>
+        <h4 style="color:#EF5350;">Feed People</h4>
+        <p>Edible surplus food is matched with volunteers, orphanages, and communities in under 30 minutes.</p>
+      </div>
+      <div class="cascade-card" style="border-top-color:#F9A825;">
+        <div class="emoji">🐾</div>
+        <h4 style="color:#F9A825;">Feed Animals</h4>
+        <p>Stale rotis, veg peels, overripe fruits — routed to shelters, Gaushalas, and street feeders.</p>
+      </div>
+      <div class="cascade-card" style="border-top-color:#66BB6A;">
+        <div class="emoji">⚡</div>
+        <h4 style="color:#66BB6A;">Biogas Fuel</h4>
+        <p>Truly rotten waste goes to anaerobic digesters → biomethane → runs vehicles & generators.</p>
+      </div>
+      <div class="cascade-card" style="border-top-color:rgba(255,248,225,0.3);">
+        <div class="emoji">🌱</div>
+        <h4 style="color:rgba(255,248,225,0.6);">Compost</h4>
+        <p>Nothing wasted — the final residue becomes nutrient-rich compost for campus gardens.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: COMPONENT ARCHITECTURE -->
+<div class="slide" data-slide="4">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-gold"><i class="fa-solid fa-diagram-project"></i> Component Architecture</div>
+    <h2 id="a-line1">Four layers. <span class="gold">One closed loop.</span></h2>
+    <p class="subtitle" id="a-line2">From waste bin to biogas pump — every kg is sensed, routed, and tracked end-to-end.</p>
+    <div class="arch-wrap" id="arch-wrap">
+      <div class="arch-stack">
+        <div class="arch-layer">
+          <h5><span class="dot-mark" style="background:#EF5350;"></span> Layer 1 · Sensing (bin-side)</h5>
+          <div class="sub">Ultrasonic HC-SR04 reads fill level, HX711 load cell weighs the bin, DHT11 tracks temperature & humidity for food safety, MQ-4 detects methane leaks.</div>
+          <div class="chips"><span class="chip">ESP32 NodeMCU</span><span class="chip gold">HC-SR04</span><span class="chip">HX711</span><span class="chip gold">DHT11</span><span class="chip">MQ-4</span><span class="chip green">Solar + Li-ion</span></div>
+        </div>
+        <div class="arch-arrow">▼</div>
+        <div class="arch-layer" style="border-left-color:#F9A825;">
+          <h5><span class="dot-mark" style="background:#F9A825;"></span> Layer 2 · Connectivity</h5>
+          <div class="sub">ESP32's onboard Wi-Fi streams readings over HTTPS to Firebase — with offline queuing and deep-sleep for low power.</div>
+          <div class="chips"><span class="chip">Wi-Fi</span><span class="chip gold">HTTPS</span><span class="chip">Firestore</span><span class="chip green">Deep-sleep</span></div>
+        </div>
+        <div class="arch-arrow">▼</div>
+        <div class="arch-layer" style="border-left-color:#66BB6A;">
+          <h5><span class="dot-mark" style="background:#66BB6A;"></span> Layer 3 · Cascade Intelligence</h5>
+          <div class="sub">Rule engine decides every kg's fate — edible → people, animal-safe → shelters, rotten → biogas. Temperature & expiry logic auto-triggers pickups.</div>
+          <div class="chips"><span class="chip">Rule engine</span><span class="chip gold">Temp logic</span><span class="chip">Demand match</span><span class="chip green">Alerts</span></div>
+        </div>
+        <div class="arch-arrow">▼</div>
+        <div class="arch-layer" style="border-left-color:#EF5350;">
+          <h5><span class="dot-mark" style="background:#EF5350;"></span> Layer 4 · EcoShare Platform</h5>
+          <div class="sub">Live dashboard, real-time charts, campus map, notifications, and a judge panel — all from a single-file web app.</div>
+          <div class="chips"><span class="chip">Dashboard</span><span class="chip gold">Charts</span><span class="chip">Judge panel</span></div>
+        </div>
+      </div>
+      <div class="arch-side">
+        <h5 style="color:#66BB6A;display:flex;align-items:center;"><span class="dot-mark" style="background:#66BB6A;"></span>⚡ Energy Closed-Loop</h5>
+        <div class="sub" style="margin-top:8px;color:rgba(255,248,225,0.6);">Non-edible waste → anaerobic digester → biomethane → campus vehicles & generators.</div>
+        <div class="chips" style="margin-top:10px;">
+          <span class="chip green">Biogas plant</span><span class="chip green">Biomethane</span><span class="chip green">0 grid emissions</span>
+        </div>
+        <div class="sub" style="margin-top:auto;padding-top:12px;font-size:11px;color:rgba(102,187,106,0.75);">1 kg waste → 0.6 m³ biogas → 1.5 km car travel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: PROJECTED SENSOR MAP -->
+<div class="slide" data-slide="5">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-green"><i class="fa-solid fa-map-location-dot"></i> Projected Sensor Map</div>
+    <h2 id="m-line1">A <span class="green">sensing net</span> across UEM Kolkata</h2>
+    <p class="subtitle" id="m-line2">Projected deployment of 12 smart bins — each streaming fill level, weight, temperature & gas data live to the EcoShare cloud.</p>
+    <div class="map-frame" id="map-frame">
+      <div class="map-zone" style="left:5%;top:9%;">🍛 Main Canteen <span style="color:#EF5350;">· 3 bins</span></div>
+      <div class="map-zone" style="left:40%;top:5%;">☕ Cafeteria <span style="color:#EF5350;">· 2 bins</span></div>
+      <div class="map-zone" style="left:70%;top:9%;">🏠 Mess & Hostels <span style="color:#EF5350;">· 3 bins</span></div>
+      <div class="map-zone" style="left:6%;top:64%;">🌳 Green Lawn <span style="color:#66BB6A;">· compost</span></div>
+      <div class="map-zone" style="left:69%;top:66%;">🐾 Shelter & Gaushala <span style="color:#F9A825;">· 1 bin</span></div>
+      <div class="map-zone" style="left:38%;top:60%;">🧑‍🍳 Sorting & Distribution Hub</div>
+      <div class="map-zone" style="left:84%;top:40%;border-color:rgba(102,187,106,0.4);">⚡ Biogas Plant</div>
+
+      <div class="pin sensor" style="left:13%;top:28%;"></div>
+      <div class="pin sensor" style="left:24%;top:17%;"></div>
+      <div class="pin sensor" style="left:31%;top:29%;"></div>
+      <div class="pin sensor" style="left:47%;top:13%;"></div>
+      <div class="pin sensor" style="left:56%;top:24%;"></div>
+      <div class="pin sensor" style="left:78%;top:26%;"></div>
+      <div class="pin sensor" style="left:87%;top:17%;"></div>
+      <div class="pin sensor" style="left:80%;top:35%;"></div>
+      <div class="pin shelter" style="left:77%;top:75%;"></div>
+      <div class="pin plant" style="left:90%;top:48%;"></div>
+
+      <div class="map-legend">
+        <span><span class="pin sensor"></span> Smart sensor bin</span>
+        <span><span class="pin shelter"></span> Animal shelter route</span>
+        <span><span class="pin plant"></span> Biogas plant</span>
+        <span style="color:#F9A825;">→ cascade flow</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SUSTAINABILITY TARGETS -->
+<div class="slide" data-slide="6">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-red"><i class="fa-solid fa-bullseye"></i> Sustainability Targets</div>
+    <h2 id="targets-line1">Targets we can <span class="accent">prove</span></h2>
+    <p class="subtitle" id="targets-line2">Concrete, measurable goals for the 24-hour build and 8-week campus pilot.</p>
+    <div class="target-grid" id="target-grid">
+      <div class="target-card">
+        <div class="big">90%</div><div class="cap">waste diverted from landfill</div>
+        <div class="target-bar"><i style="width:90%;"></i></div>
+        <p>Campus food waste rerouted to people, animals & energy instead of the dump.</p>
+      </div>
+      <div class="target-card" style="border-top-color:#F9A825;">
+        <div class="big gold">3,000</div><div class="cap">meals rescued / semester</div>
+        <div class="target-bar"><i class="gold" style="width:75%;"></i></div>
+        <p>Edible surplus matched to shelters & communities through the live feed.</p>
+      </div>
+      <div class="target-card" style="border-top-color:#66BB6A;">
+        <div class="big green">800 m³</div><div class="cap">biogas → 2,000 km fuel</div>
+        <div class="target-bar"><i class="green" style="width:70%;"></i></div>
+        <p>Anaerobic digestion converts rotten waste into vehicle-grade biomethane.</p>
+      </div>
+      <div class="target-card">
+        <div class="big">4,500 kg</div><div class="cap">CO₂-eq avoided</div>
+        <div class="target-bar"><i style="width:85%;"></i></div>
+        <p>Capturing methane (25× CO₂) that would otherwise leak from landfill.</p>
+      </div>
+      <div class="target-card" style="border-top-color:#F9A825;">
+        <div class="big gold">₹150/km</div><div class="cap">fuel cost saved vs petrol</div>
+        <div class="target-bar"><i class="gold" style="width:60%;"></i></div>
+        <p>Biomethane displaces fossil fuel in campus transport & generators.</p>
+      </div>
+      <div class="target-card" style="border-top-color:#66BB6A;">
+        <div class="big green">12</div><div class="cap">live sensor nodes · 99% uptime</div>
+        <div class="target-bar"><i class="green" style="width:80%;"></i></div>
+        <p>ESP32 smart bins streaming real-time data with solar + battery backup.</p>
+      </div>
+    </div>
+    <div class="phase-strip" id="phase-strip">
+      <div class="phase"><b>24h build</b>2-node working prototype</div>
+      <div class="phase"><b>4-week pilot</b>12 smart bins · 1 campus</div>
+      <div class="phase"><b>Scale</b>Multi-campus + city biogas</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: FEATURES -->
+<div class="slide" data-slide="7">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-red"><i class="fa-solid fa-rocket"></i> Live Platform</div>
+    <h2 id="f-line1">Built for <span class="accent">real-time</span> impact</h2>
+    <p class="subtitle" id="f-line2">Hardware on the ground. Software in the cloud. Everything wired together.</p>
+    <div class="feature-grid" id="feature-grid">
+      <div class="feature-item"><div class="icon">📡</div><h5>Smart Bin Telemetry</h5><p>ESP32 nodes stream fill level, weight & temperature to the dashboard live</p></div>
+      <div class="feature-item"><div class="icon">🎯</div><h5>Smart Cascade</h5><p>Auto-routes food to the right tier — human, animal, or biogas</p></div>
+      <div class="feature-item"><div class="icon">📊</div><h5>Dashboard</h5><p>Chart.js visualizations: pie chart, bar chart, interactive campus map</p></div>
+      <div class="feature-item"><div class="icon">🏆</div><h5>Gamification</h5><p>Leaderboard with badges — Green Warrior, Animal Hero, Energy Pioneer</p></div>
+      <div class="feature-item"><div class="icon">🔐</div><h5>Judge Panel</h5><p>Admin dashboard with activity log & exportable impact reports</p></div>
+      <div class="feature-item"><div class="icon">🌡️</div><h5>Safety Monitor</h5><p>Temperature tracking & expiry alerts for perishable food batches</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: WHY ECOSHARE -->
+<div class="slide" data-slide="8">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-gold"><i class="fa-solid fa-trophy"></i> Why We're Different</div>
+    <h2 id="w-line1">No one else does <span class="gold">all three</span></h2>
+    <p class="subtitle" id="w-line2">Existing apps only feed humans. EcoShare covers the full cascade — and powers it with hardware.</p>
+    <div class="comp-table" id="comp-table">
+      <div class="comp-row header">
+        <div class="comp-cell">Feature</div>
+        <div class="comp-cell">Existing Apps</div>
+        <div class="comp-cell">EcoShare</div>
+      </div>
+      <div class="comp-row"><div class="comp-cell">Coverage</div><div class="comp-cell">Only feed humans</div><div class="comp-cell">Humans + Animals + Biogas</div></div>
+      <div class="comp-row"><div class="comp-cell">Approach</div><div class="comp-cell">Ad-hoc donations</div><div class="comp-cell">Smart cascade matching</div></div>
+      <div class="comp-row"><div class="comp-cell">Hardware</div><div class="comp-cell">None</div><div class="comp-cell">ESP32 sensor mesh → energy</div></div>
+      <div class="comp-row"><div class="comp-cell">Tracking</div><div class="comp-cell">No impact tracking</div><div class="comp-cell">Charts, maps, leaderboard</div></div>
+      <div class="comp-row"><div class="comp-cell">Focus</div><div class="comp-cell">General purpose</div><div class="comp-cell">Built for campus ecosystem</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: IMPACT -->
+<div class="slide" data-slide="9">
+  <div class="gradient-bg"></div>
+  <canvas class="bg-canvas" id="canvas-9"></canvas>
+  <div class="slide-content">
+    <div class="tag tag-green"><i class="fa-solid fa-chart-line"></i> Impact Metrics</div>
+    <h2 id="i-line1">Every kg <span class="green">counts</span></h2>
+    <p class="subtitle" id="i-line2">Real-time tracking of the difference we're making together.</p>
+    <div class="stat-row" id="i-stats">
+      <div class="stat-card"><div class="num">🍽️ <span class="counter" data-target="250">0</span>+</div><div class="label">Meals Saved from Trash</div></div>
+      <div class="stat-card" style="border-left-color:#F9A825;"><div class="num" style="color:#F9A825;">🌍 <span class="counter" data-target="320">0</span> kg</div><div class="label">CO₂ Offset</div></div>
+      <div class="stat-card" style="border-left-color:#66BB6A;"><div class="num" style="color:#66BB6A;">🐾 <span class="counter" data-target="47">0</span></div><div class="label">Animals Fed</div></div>
+      <div class="stat-card" style="border-left-color:#F9A825;"><div class="num" style="color:#F9A825;">⚡ <span class="counter" data-target="128">0</span> L</div><div class="label">Biogas Generated</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card" style="min-width:200px;"><div class="num" style="color:#F9A825;font-size:24px;">100 kg waste → 150 km car 🚗</div><div class="label">Biogas conversion rate</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: TECH STACK -->
+<div class="slide" data-slide="10">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-red"><i class="fa-solid fa-code"></i> Tech Stack</div>
+    <h2 id="t-line1">Hardware to cloud. <span class="accent">Zero build.</span> Instant impact.</h2>
+    <p class="subtitle" id="t-line2">ESP32 sensing nodes feed a single-file web platform — deployed to Firebase.</p>
+    <div class="tech-grid" id="tech-grid">
+      <div class="tech-item"><h5>ESP32 NodeMCU</h5><p>Smart-bin controller, built-in Wi-Fi</p></div>
+      <div class="tech-item" style="border-top-color:#F9A825;"><h5 style="color:#F9A825;">HC-SR04 · HX711</h5><p>Fill level + weight sensing</p></div>
+      <div class="tech-item" style="border-top-color:#66BB6A;"><h5 style="color:#66BB6A;">DHT11 · MQ-4</h5><p>Temp, humidity, methane</p></div>
+      <div class="tech-item"><h5>Firebase</h5><p>Auth, Firestore, realtime sync</p></div>
+      <div class="tech-item" style="border-top-color:#F9A825;"><h5 style="color:#F9A825;">HTML/CSS + Tailwind</h5><p>Indian folk single-file UI</p></div>
+      <div class="tech-item" style="border-top-color:#66BB6A;"><h5 style="color:#66BB6A;">Vanilla JS</h5><p>All logic, state, Canvas 2D</p></div>
+      <div class="tech-item"><h5>Chart.js + GSAP</h5><p>Charts & transitions</p></div>
+      <div class="tech-item" style="border-top-color:#F9A825;"><h5 style="color:#F9A825;">Solar + Li-ion</h5><p>Off-grid, zero-emission nodes</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: ROADMAP -->
+<div class="slide" data-slide="11">
+  <div class="gradient-bg"></div>
+  <div class="slide-content">
+    <div class="tag tag-gold"><i class="fa-solid fa-road"></i> Roadmap</div>
+    <h2 id="r-line1">From prototype to <span class="gold">campus-scale net-zero</span></h2>
+    <p class="subtitle" id="r-line2">Proving the cascade on one campus, then scaling it across the city.</p>
+    <div class="road-grid" id="road-grid">
+      <div class="road-item"><div class="icon">📡</div><h5>Fleet Scaling</h5><p>12 → 200 solar-powered smart bins</p></div>
+      <div class="road-item"><div class="icon">🔋</div><h5>Solar Nodes</h5><p>Zero grid draw, fully off-grid sensing</p></div>
+      <div class="road-item"><div class="icon">📶</div><h5>LoRaWAN</h5><p>Long-range telemetry for wide campuses</p></div>
+      <div class="road-item"><div class="icon">🧠</div><h5>Predictive Fill</h5><p>ML-driven pickup & demand forecasting</p></div>
+      <div class="road-item"><div class="icon">🏙️</div><h5>City Biogas</h5><p>Tie-in with municipal biogas plants</p></div>
+      <div class="road-item"><div class="icon">🤝</div><h5>Govt Programs</h5><p>PMGKAY, PM Poshan, SAMPADA</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: THANK YOU -->
+<div class="slide" data-slide="12">
+  <div class="gradient-bg"></div>
+  <canvas class="bg-canvas" id="canvas-12"></canvas>
+  <div class="slide-content" style="text-align:center;align-items:center;">
+    <div style="font-size:80px;margin-bottom:20px;">🌿</div>
+    <h1 style="font-size:96px;" id="thank-line1">Thank You</h1>
+    <h2 class="gold" id="thank-line2">Let's build a zero-waste future.</h2>
+    <p class="subtitle" style="margin:20px auto;max-width:520px;" id="thank-line3">"When we waste food, we waste the land, water, energy — and the chance to feed someone."</p>
+    <div style="margin-top:26px;">
+      <a href="https://eco-share-26.web.app/" target="_blank" style="display:inline-block;background:#C62828;color:#FFF8E1;border:2px solid #F9A825;padding:12px 32px;border-radius:40px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:1px;">
+        <i class="fa-solid fa-globe"></i> Live Demo: eco-share-26.web.app
+      </a>
+    </div>
+    <p style="margin-top:22px;color:rgba(255,248,225,0.4);font-size:14px;">Team EcoShare | Sustainability Track</p>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div id="controls">
+  <button onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+  <span id="slide-number">1/12</span>
+  <div id="dots"></div>
+  <button class="go-btn" onclick="goFullscreen()"><i class="fa-solid fa-expand"></i> Fullscreen</button>
+  <button onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+// ============ SLIDE NAV ============
+let currentSlide = 1;
+const totalSlides = 12;
+
+function showSlide(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  const el = document.querySelector(`[data-slide="${n}"]`);
+  if (el) el.classList.add('active');
+  currentSlide = n;
+  document.getElementById('slide-number').textContent = `${n}/${totalSlides}`;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === n));
+  animateSlide(n);
+}
+
+function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+});
+
+// Build dots
+for (let i = 1; i <= totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 1 ? ' active' : '');
+  dot.onclick = () => showSlide(i);
+  document.getElementById('dots').appendChild(dot);
+}
+
+function goFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+// ============ ANIMATIONS ============
+const TL = {};
+
+function animateSlide(n) {
+  if (TL[n]) { TL[n].kill(); }
+  const s = document.querySelector(`[data-slide="${n}"]`);
+  if (!s) return;
+  const targets = s.querySelectorAll('h1, h2, .tag, .subtitle, .stat-card, .cascade-card, .feature-item, .comp-row, .tech-item, .road-item, .arch-layer, .arch-side, .target-card, .phase, .map-zone');
+
+  gsap.set(targets, { opacity: 0, y: 20 });
+
+  TL[n] = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    .to(s.querySelector('.tag'), { opacity: 1, y: 0, duration: 0.3 })
+    .to(s.querySelectorAll('h1, h2'), { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, '-=0.1')
+    .to(s.querySelectorAll('.subtitle'), { opacity: 1, y: 0, duration: 0.4 }, '-=0.2')
+    .to(s.querySelectorAll('.stat-card, .cascade-card'), { opacity: 1, y: 0, duration: 0.3, stagger: 0.08 }, '-=0.2')
+    .to(s.querySelectorAll('.feature-item, .comp-row, .tech-item, .road-item, .arch-layer, .arch-side, .target-card, .phase, .map-zone'), { opacity: 1, y: 0, duration: 0.25, stagger: 0.04 }, '-=0.15');
+}
+
+// ============ COUNTER ANIMATION ============
+function animateCounters() {
+  document.querySelectorAll('.counter').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    gsap.to(el, {
+      innerText: target,
+      duration: 1.5,
+      snap: { innerText: 1 },
+      ease: 'power2.out',
+      scrollTrigger: { trigger: el }
+    });
+  });
+}
+
+// ============ PARTICLE BACKGROUND ============
+const pc = document.getElementById('particle-canvas');
+const pctx = pc.getContext('2d');
+let particles = [];
+
+function resizeParticles() {
+  pc.width = window.innerWidth;
+  pc.height = window.innerHeight;
+}
+resizeParticles();
+window.addEventListener('resize', resizeParticles);
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * pc.width;
+    this.y = Math.random() * pc.height;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r = Math.random() * 2 + 0.5;
+    this.a = Math.random() * 0.3 + 0.1;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0) this.x = pc.width;
+    if (this.x > pc.width) this.x = 0;
+    if (this.y < 0) this.y = pc.height;
+    if (this.y > pc.height) this.y = 0;
+  }
+  draw() {
+    pctx.beginPath();
+    pctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    pctx.fillStyle = `rgba(198,40,40,${this.a})`;
+    pctx.fill();
+  }
+}
+
+for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+function animateParticles() {
+  pctx.clearRect(0, 0, pc.width, pc.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        pctx.beginPath();
+        pctx.moveTo(particles[i].x, particles[i].y);
+        pctx.lineTo(particles[j].x, particles[j].y);
+        pctx.strokeStyle = `rgba(198,40,40,${0.06 * (1 - dist / 120)})`;
+        pctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ============ CANVAS BACKGROUNDS FOR SPECIFIC SLIDES ============
+function setupSlideCanvases() {
+  // Slide 1: Rotating rings
+  const c1 = document.getElementById('canvas-1');
+  if (c1) {
+    const ctx = c1.getContext('2d');
+    function resize() { c1.width = window.innerWidth; c1.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    let angle = 0;
+    function draw() {
+      if (!document.querySelector('[data-slide="1"].active')) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, c1.width, c1.height);
+      angle += 0.005;
+      const cx = c1.width * 0.8, cy = c1.height * 0.5;
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, 80 + i * 40, angle + i * 0.5, angle + i * 0.5 + Math.PI * 1.5);
+        ctx.strokeStyle = `rgba(198,40,40,${0.08 - i * 0.01})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy, 80 + i * 40, angle + Math.PI + i * 0.5, angle + Math.PI + i * 0.5 + Math.PI * 1.5);
+        ctx.strokeStyle = `rgba(249,168,37,${0.06 - i * 0.01})`;
+        ctx.stroke();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // Slide 12: Expanding circles (pulse)
+  const c12 = document.getElementById('canvas-12');
+  if (c12) {
+    const ctx = c12.getContext('2d');
+    function resize() { c12.width = window.innerWidth; c12.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    let t = 0;
+    function draw() {
+      if (!document.querySelector('[data-slide="12"].active')) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, c12.width, c12.height);
+      t += 0.01;
+      const cx = c12.width / 2, cy = c12.height / 2;
+      for (let i = 0; i < 3; i++) {
+        const r = (t * 30 + i * 100) % 400;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(198,40,40,${Math.max(0, 0.12 - r / 3000)})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+}
+setupSlideCanvases();
+
+// ============ INIT ============
+showSlide(1);
+setTimeout(animateCounters, 500);
+</script>
+</body>
+</html>
